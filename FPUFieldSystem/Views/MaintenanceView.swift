@@ -27,12 +27,18 @@ struct MaintenanceView: View {
             reorderSection
             userAdminSection
         }
+        #if os(iOS)
         .listStyle(.insetGrouped)
+        #else
+        .listStyle(.plain)
+        #endif
         .scrollContentBackground(.hidden)
         .background(Theme.bgDark)
+        #if os(iOS)
         .environment(\.editMode, .constant(isReordering ? .active : .inactive))
-        .navigationTitle("メンテナンス")
         .toolbarBackground(Theme.cardBg, for: .navigationBar)
+        #endif
+        .navigationTitle("メンテナンス")
         .onAppear(perform: syncLocalOrder)
         .onChange(of: vm.links) { _, _ in syncLocalOrder() }
         .fileImporter(isPresented: $showCSVImporter, allowedContentTypes: [.commaSeparatedText, .plainText, .text]) { result in

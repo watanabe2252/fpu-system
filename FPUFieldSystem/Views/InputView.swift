@@ -71,7 +71,9 @@ struct InputView: View {
                         .tint(Theme.amber)
 
                         TextField("手入力可", text: $customChannel)
+                            #if os(iOS)
                             .textInputAutocapitalization(.characters)
+                            #endif
                             .padding(10)
                             .background(Theme.bgDark)
                             .clipShape(RoundedRectangle(cornerRadius: 10))
@@ -110,7 +112,9 @@ struct InputView: View {
                         HStack(spacing: 2) {
                             Text("-").foregroundStyle(.gray)
                             TextField("", value: $dbValue, format: .number)
+                                #if os(iOS)
                                 .keyboardType(.numberPad)
+                                #endif
                                 .multilineTextAlignment(.center)
                                 .frame(width: 44)
                                 .font(.system(size: 22, weight: .black, design: .monospaced))

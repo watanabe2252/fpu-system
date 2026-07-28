@@ -23,9 +23,11 @@ struct LoginView: View {
                     .font(.system(size: 11, weight: .bold))
                     .foregroundStyle(.gray)
                 TextField("example@fpu.system", text: $email)
+                    #if os(iOS)
                     .textInputAutocapitalization(.never)
-                    .autocorrectionDisabled()
                     .keyboardType(.emailAddress)
+                    #endif
+                    .autocorrectionDisabled()
                     .padding(12)
                     .background(Theme.bgDark)
                     .clipShape(RoundedRectangle(cornerRadius: 12))

@@ -188,7 +188,9 @@ private struct CreateProgramSheet: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("番組ID (半角英数字)").font(.system(size: 11, weight: .bold)).foregroundStyle(.gray)
                     TextField("例: ekiden-2026", text: $id)
+                        #if os(iOS)
                         .textInputAutocapitalization(.never)
+                        #endif
                         .padding(12)
                         .background(Theme.cardBg)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
@@ -254,7 +256,9 @@ private struct DuplicateProgramSheet: View {
                 VStack(alignment: .leading, spacing: 4) {
                     Text("新しい番組ID (半角英数字)").font(.system(size: 11, weight: .bold)).foregroundStyle(.gray)
                     TextField("番組ID", text: $id)
+                        #if os(iOS)
                         .textInputAutocapitalization(.never)
+                        #endif
                         .padding(12)
                         .background(Theme.cardBg)
                         .clipShape(RoundedRectangle(cornerRadius: 12))

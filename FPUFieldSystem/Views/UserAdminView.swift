@@ -52,7 +52,11 @@ struct UserAdminView: View {
                     .font(.system(size: 9, weight: .bold))
             }
         }
+        #if os(iOS)
         .listStyle(.insetGrouped)
+        #else
+        .listStyle(.plain)
+        #endif
         .scrollContentBackground(.hidden)
         .background(Theme.bgDark)
         .navigationTitle("アカウント権限管理")

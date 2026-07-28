@@ -77,7 +77,9 @@ struct DashboardView: View {
 
             HStack(spacing: 8) {
                 TextField("Ch (例: C2H)", text: $quickChannel)
+                    #if os(iOS)
                     .textInputAutocapitalization(.characters)
+                    #endif
                     .font(.system(size: 12, weight: .black, design: .monospaced))
                     .foregroundStyle(Theme.amber)
                     .padding(8)
