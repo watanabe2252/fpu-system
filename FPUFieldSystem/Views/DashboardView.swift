@@ -3,6 +3,12 @@ import SwiftUI
 struct DashboardView: View {
     @ObservedObject var vm: WorkspaceViewModel
 
+    @State private var quickLinkId: String?
+    @State private var quickPhase: Phase = .run
+    @State private var quickChannel = ""
+    @State private var quickCenterMemo = ""
+    @State private var isQuickSubmitting = false
+
     var body: some View {
         Group {
             if vm.isLoading {
@@ -10,6 +16,8 @@ struct DashboardView: View {
             } else {
                 ScrollView {
                     VStack(alignment: .leading, spacing: 20) {
+                        quickUpdatePanel
+
                         ForEach(LinkCategory.allCases, id: \.self) { category in
                             let categoryLinks = vm.linksByCategory(category)
                             if !categoryLinks.isEmpty {
@@ -32,7 +40,94 @@ struct DashboardView: View {
         .task {
             if vm.links.isEmpty { await vm.loadAll() }
             vm.subscribeRealtime()
+            if quickLinkId == nil { quickLinkId = vm.links.first?.id }
         }
+    }
+
+    private var quickUpdatePanel: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            Label("センターメモ・Ch更新", systemImage: "bubble.left.and.text.bubble.right.fill")
+                .font(.system(size: 11, weight: .black))
+                .foregroundStyle(Theme.accentBlue)
+
+            HStack(spacing: 8) {
+                Picker("リンク", selection: $quickLinkId) {
+                    ForEach(vm.links) { link in
+                        Text(link.name).tag(Optional(link.id))
+                    }
+                }
+                .pickerStyle(.menu)
+                .tint(.white)
+                .frame(maxWidth: .infinity)
+                .padding(8)
+                .background(Theme.bgDark)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                Picker("フェーズ", selection: $quickPhase) {
+                    ForEach(Phase.allCases) { p in
+                        Text(p.label).tag(p)
+                    }
+                }
+                .pickerStyle(.menu)
+                .tint(.white)
+                .padding(8)
+                .background(Theme.bgDark)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+
+            HStack(spacing: 8) {
+                TextField("Ch (例: C2H)", text: $quickChannel)
+                    .textInputAutocapitalization(.characters)
+                    .font(.system(size: 12, weight: .black, design: .monospaced))
+                    .foregroundStyle(Theme.amber)
+                    .padding(8)
+                    .frame(width: 100)
+                    .background(Theme.bgDark)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                TextField("状況メモを入力", text: $quickCenterMemo)
+                    .font(.system(size: 12, weight: .bold))
+                    .foregroundStyle(.white)
+                    .padding(8)
+                    .background(Theme.bgDark)
+                    .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                Button {
+                    Task { await submitQuickUpdate() }
+                } label: {
+                    if isQuickSubmitting {
+                        ProgressView().tint(Theme.bgDark)
+                    } else {
+                        Image(systemName: "paperplane.fill")
+                    }
+                }
+                .frame(width: 40, height: 36)
+                .background(Theme.accentBlue)
+                .foregroundStyle(Theme.bgDark)
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+                .disabled(quickLinkId == nil || isQuickSubmitting)
+            }
+        }
+        .padding(12)
+        .background(Theme.cardBg)
+        .clipShape(RoundedRectangle(cornerRadius: 16))
+        .overlay(RoundedRectangle(cornerRadius: 16).stroke(Theme.borderStroke))
+    }
+
+    private func submitQuickUpdate() async {
+        guard let linkId = quickLinkId else { return }
+        isQuickSubmitting = true
+        defer { isQuickSubmitting = false }
+        let channel = quickChannel.trimmingCharacters(in: .whitespaces)
+        let memo = quickCenterMemo.trimmingCharacters(in: .whitespaces)
+        try? await vm.submitCenterMemoQuickUpdate(
+            linkId: linkId,
+            phase: quickPhase,
+            centerMemo: memo.isEmpty ? nil : memo,
+            fpuChannel: channel.isEmpty ? nil : channel
+        )
+        quickChannel = ""
+        quickCenterMemo = ""
     }
 
     private func categorySection(category: LinkCategory, categoryLinks: [Link]) -> some View {

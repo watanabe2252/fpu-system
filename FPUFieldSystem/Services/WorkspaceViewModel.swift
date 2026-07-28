@@ -6,6 +6,7 @@ final class WorkspaceViewModel: ObservableObject {
     let program: Program
     private let supabase: SupabaseService
 
+    @Published var programTitle: String
     @Published var links: [Link] = []
     @Published var records: [Record] = []
     @Published var specMasters: [SpecMaster] = []
@@ -22,7 +23,13 @@ final class WorkspaceViewModel: ObservableObject {
 
     init(program: Program, supabase: SupabaseService) {
         self.program = program
+        self.programTitle = program.title
         self.supabase = supabase
+    }
+
+    func updateProgramTitle(_ newTitle: String) async throws {
+        try await supabase.updateProgramTitle(id: program.id, title: newTitle)
+        programTitle = newTitle
     }
 
     func linksByCategory(_ category: LinkCategory) -> [Link] {

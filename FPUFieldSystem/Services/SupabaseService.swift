@@ -85,6 +85,33 @@ final class SupabaseService: ObservableObject {
         try await client.from("programs").delete().eq("id", value: id).execute()
     }
 
+    func updateProgramTitle(id: String, title: String) async throws {
+        try await client.from("programs").update(["title": title]).eq("id", value: id).execute()
+    }
+
+    func duplicateProgram(sourceId: String, targetId: String, targetTitle: String) async throws {
+        try await client.from("programs").insert(Program(id: targetId, title: targetTitle)).execute()
+
+        let sourceLinks: [Link] = try await client.from("links")
+            .select()
+            .eq("program_id", value: sourceId)
+            .execute()
+            .value
+
+        guard !sourceLinks.isEmpty else { return }
+
+        struct DuplicatedLink: Encodable {
+            let program_id: String
+            let name: String
+            let category: String
+            let sort_order: Int
+        }
+        let payloads = sourceLinks.map {
+            DuplicatedLink(program_id: targetId, name: $0.name, category: $0.category.rawValue, sort_order: $0.sortOrder)
+        }
+        try await client.from("links").insert(payloads).execute()
+    }
+
     // MARK: - Links
 
     func fetchLinks(programId: String) async throws -> [Link] {

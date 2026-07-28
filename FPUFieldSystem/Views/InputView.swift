@@ -159,12 +159,20 @@ struct InputView: View {
         }
         .background(Theme.bgDark.ignoresSafeArea())
         .onAppear {
-            if selectedLinkId == nil { selectedLinkId = vm.links.first?.id }
+            if selectedLinkId == nil {
+                let savedId = UserDefaults.standard.string(forKey: savedLinkKey)
+                selectedLinkId = vm.links.first { $0.id == savedId }?.id ?? vm.links.first?.id
+            }
             loadCurrentRecord()
         }
-        .onChange(of: selectedLinkId) { _, _ in loadCurrentRecord() }
+        .onChange(of: selectedLinkId) { _, newValue in
+            UserDefaults.standard.set(newValue, forKey: savedLinkKey)
+            loadCurrentRecord()
+        }
         .onChange(of: phase) { _, _ in loadCurrentRecord() }
     }
+
+    private var savedLinkKey: String { "fpu_saved_link_\(vm.program.id)" }
 
     private func syncChannel() {
         if !channelBase.isEmpty || !polarization.isEmpty {

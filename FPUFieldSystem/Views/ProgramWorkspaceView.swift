@@ -6,6 +6,8 @@ struct ProgramWorkspaceView: View {
     let onBack: () -> Void
 
     @State private var selectedTab: Tab = .dashboard
+    @State private var isEditingTitle = false
+    @State private var editedTitle = ""
 
     enum Tab {
         case dashboard, input, maintenance
@@ -41,6 +43,16 @@ struct ProgramWorkspaceView: View {
         }
         .background(Theme.bgDark.ignoresSafeArea())
         .onDisappear { vm.unsubscribeRealtime() }
+        .alert("番組名を編集", isPresented: $isEditingTitle) {
+            TextField("番組名", text: $editedTitle)
+            Button("キャンセル", role: .cancel) {}
+            Button("保存") {
+                let newTitle = editedTitle.trimmingCharacters(in: .whitespaces)
+                if !newTitle.isEmpty {
+                    Task { try? await vm.updateProgramTitle(newTitle) }
+                }
+            }
+        }
     }
 
     private var header: some View {
@@ -52,10 +64,20 @@ struct ProgramWorkspaceView: View {
                 Image(systemName: "chevron.left")
                     .foregroundStyle(Theme.accentBlue)
             }
-            Text(vm.program.title)
+            Text(vm.programTitle)
                 .font(.system(size: 15, weight: .black))
                 .foregroundStyle(Theme.accentBlue)
                 .lineLimit(1)
+            if supabase.currentUserRole == .admin {
+                Button {
+                    editedTitle = vm.programTitle
+                    isEditingTitle = true
+                } label: {
+                    Image(systemName: "pencil")
+                        .font(.system(size: 12))
+                        .foregroundStyle(.gray)
+                }
+            }
             Spacer()
             Circle()
                 .fill(vm.realtimeConnected ? Theme.accentGreen : Color.gray.opacity(0.4))
