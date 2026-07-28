@@ -7,6 +7,20 @@ struct UserAdminView: View {
     @State private var errorMessage: String?
 
     var body: some View {
+        #if os(macOS)
+        HStack(spacing: 0) {
+            Spacer(minLength: 0)
+            listContent
+                .frame(maxWidth: 640)
+            Spacer(minLength: 0)
+        }
+        .background(Theme.bgDark)
+        #else
+        listContent
+        #endif
+    }
+
+    private var listContent: some View {
         List {
             Section {
                 if isLoading {

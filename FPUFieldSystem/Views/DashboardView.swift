@@ -200,6 +200,8 @@ struct DashboardView: View {
                 }
             }
 
+            specBlock(record: record)
+
             if let memo = record?.fieldMemo, !memo.isEmpty {
                 Text("現:\(memo)")
                     .font(.system(size: 9, weight: .bold))
@@ -218,5 +220,34 @@ struct DashboardView: View {
         .background(vm.statusBackground(category: link.category, value: value))
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.borderStroke))
+    }
+
+    private func specBlock(record: Record?) -> some View {
+        VStack(alignment: .leading, spacing: 1) {
+            specRow(label: "変調", value: record?.modType)
+            specRow(label: "プリセット", value: record?.presetType)
+            specRow(label: "TSレート", value: record?.tsRate)
+                .padding(.bottom, 1)
+                .overlay(alignment: .bottom) {
+                    Divider().opacity(0.4)
+                }
+            specRow(label: "TX", value: record?.txModel)
+            specRow(label: "RX", value: record?.rxModel)
+        }
+        .padding(5)
+        .background(Theme.bgDark.opacity(0.6))
+        .clipShape(RoundedRectangle(cornerRadius: 6))
+    }
+
+    private func specRow(label: String, value: String?) -> some View {
+        HStack {
+            Text(label)
+                .foregroundStyle(.gray)
+            Spacer()
+            Text((value?.isEmpty ?? true) ? "-" : value!)
+                .foregroundStyle(.secondary)
+                .lineLimit(1)
+        }
+        .font(.system(size: 8, weight: .medium, design: .monospaced))
     }
 }
