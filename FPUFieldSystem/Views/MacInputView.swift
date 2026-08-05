@@ -143,6 +143,8 @@ struct MacInputView: View {
             }
         }
         .formStyle(.grouped)
+        .scrollContentBackground(.hidden)
+        .background(Theme.bgDark)
         .navigationTitle("データ入力")
         .onAppear {
             if selectedLinkId == nil {

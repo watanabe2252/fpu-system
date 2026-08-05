@@ -18,6 +18,7 @@ struct MaintenanceView: View {
     @State private var isImportingCSV = false
 
     @State private var isReordering = false
+    @State private var editingLink: Link?
 
     var body: some View {
         List {
@@ -43,6 +44,11 @@ struct MaintenanceView: View {
         .onChange(of: vm.links) { _, _ in syncLocalOrder() }
         .fileImporter(isPresented: $showCSVImporter, allowedContentTypes: [.commaSeparatedText, .plainText, .text]) { result in
             handleCSVImport(result)
+        }
+        .sheet(item: $editingLink) { link in
+            EditLinkSheet(link: link) { name, category in
+                Task { try? await vm.updateLink(link, name: name, category: category) }
+            }
         }
     }
 
@@ -281,10 +287,20 @@ struct MaintenanceView: View {
                 .listRowBackground(Theme.cardBg)
 
             ForEach(links.wrappedValue) { link in
-                Text(link.name)
-                    .font(.system(size: 11, weight: .bold))
-                    .foregroundStyle(.white)
-                    .listRowBackground(Theme.cardBg)
+                HStack {
+                    Text(link.name)
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(.white)
+                    Spacer()
+                    Button {
+                        editingLink = link
+                    } label: {
+                        Image(systemName: "pencil")
+                            .foregroundStyle(Theme.accentBlue)
+                    }
+                    .buttonStyle(.plain)
+                }
+                .listRowBackground(Theme.cardBg)
             }
             .onMove { indices, newOffset in
                 links.wrappedValue.move(fromOffsets: indices, toOffset: newOffset)
@@ -336,5 +352,72 @@ struct MaintenanceView: View {
             }
             .listRowBackground(Theme.cardBg)
         }
+    }
+}
+
+private struct EditLinkSheet: View {
+    let link: Link
+    let onSave: (String, LinkCategory) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var name: String
+    @State private var category: LinkCategory
+
+    init(link: Link, onSave: @escaping (String, LinkCategory) -> Void) {
+        self.link = link
+        self.onSave = onSave
+        _name = State(initialValue: link.name)
+        _category = State(initialValue: link.category)
+    }
+
+    var body: some View {
+        ZStack {
+            Theme.bgDark.ignoresSafeArea()
+            VStack(alignment: .leading, spacing: 14) {
+                Text("受信点の編集")
+                    .font(.system(size: 14, weight: .black))
+                    .foregroundStyle(Theme.accentBlue)
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("受信点名").font(.system(size: 11, weight: .bold)).foregroundStyle(.gray)
+                    TextField("受信点名", text: $name)
+                        .padding(12)
+                        .background(Theme.cardBg)
+                        .clipShape(RoundedRectangle(cornerRadius: 12))
+                        .foregroundStyle(.white)
+                }
+
+                VStack(alignment: .leading, spacing: 4) {
+                    Text("カテゴリ").font(.system(size: 11, weight: .bold)).foregroundStyle(.gray)
+                    Picker("カテゴリ", selection: $category) {
+                        Text("本線系統 (main)").tag(LinkCategory.main)
+                        Text("リレー系統 (relay)").tag(LinkCategory.relay)
+                        Text("光回線系統 (opt)").tag(LinkCategory.opt)
+                    }
+                    .pickerStyle(.segmented)
+                }
+
+                Spacer()
+
+                HStack {
+                    Button("キャンセル") { dismiss() }
+                        .foregroundStyle(.gray)
+                    Spacer()
+                    Button("保存") {
+                        onSave(name.trimmingCharacters(in: .whitespaces), category)
+                        dismiss()
+                    }
+                    .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+                    .foregroundStyle(Theme.bgDark)
+                    .padding(.horizontal, 16)
+                    .padding(.vertical, 10)
+                    .background(Theme.accentGreen)
+                    .clipShape(RoundedRectangle(cornerRadius: 12))
+                }
+            }
+            .padding(20)
+        }
+        #if os(macOS)
+        .frame(minWidth: 380, minHeight: 260)
+        #endif
     }
 }

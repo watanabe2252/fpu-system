@@ -184,6 +184,11 @@ final class WorkspaceViewModel: ObservableObject {
         await reloadRecords()
     }
 
+    func updateLink(_ link: Link, name: String, category: LinkCategory) async throws {
+        try await supabase.updateLink(id: link.id, name: name, category: category)
+        await reloadLinks()
+    }
+
     func persistSortOrder(orderedIds: [String]) async throws {
         for (index, id) in orderedIds.enumerated() {
             try await supabase.updateLinkSortOrder(id: id, order: index)

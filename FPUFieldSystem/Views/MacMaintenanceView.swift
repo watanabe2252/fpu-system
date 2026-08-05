@@ -19,6 +19,7 @@ struct MacMaintenanceView: View {
     @State private var isImportingCSV = false
 
     @State private var showUserAdmin = false
+    @State private var editingLink: Link?
 
     var body: some View {
         Form {
@@ -102,6 +103,8 @@ struct MacMaintenanceView: View {
             }
         }
         .formStyle(.grouped)
+        .scrollContentBackground(.hidden)
+        .background(Theme.bgDark)
         .navigationTitle("メンテナンス")
         .onAppear(perform: syncLocalOrder)
         .onChange(of: vm.links) { _, _ in syncLocalOrder() }
@@ -111,6 +114,12 @@ struct MacMaintenanceView: View {
         .sheet(isPresented: $showUserAdmin) {
             NavigationStack { UserAdminView() }
                 .frame(minWidth: 480, minHeight: 420)
+        }
+        .sheet(item: $editingLink) { link in
+            EditLinkSheet(link: link) { name, category in
+                Task { try? await vm.updateLink(link, name: name, category: category) }
+            }
+            .frame(minWidth: 380, minHeight: 260)
         }
     }
 
@@ -184,6 +193,13 @@ struct MacMaintenanceView: View {
                             Text(link.name)
                             Spacer()
                             Button {
+                                editingLink = link
+                            } label: {
+                                Image(systemName: "pencil")
+                                    .foregroundStyle(Theme.accentBlue)
+                            }
+                            .buttonStyle(.plain)
+                            Button {
                                 Task { try? await vm.deleteLink(link) }
                             } label: {
                                 Image(systemName: "trash")
@@ -217,6 +233,50 @@ struct MacMaintenanceView: View {
             orderStatus = "✔ クラウド順序同期完了"
         } catch {
             orderStatus = "❌ \(error.localizedDescription)"
+        }
+    }
+}
+
+private struct EditLinkSheet: View {
+    let link: Link
+    let onSave: (String, LinkCategory) -> Void
+    @Environment(\.dismiss) private var dismiss
+    @State private var name: String
+    @State private var category: LinkCategory
+
+    init(link: Link, onSave: @escaping (String, LinkCategory) -> Void) {
+        self.link = link
+        self.onSave = onSave
+        _name = State(initialValue: link.name)
+        _category = State(initialValue: link.category)
+    }
+
+    var body: some View {
+        Form {
+            Section("受信点の編集") {
+                TextField("受信点名", text: $name)
+                Picker("カテゴリ", selection: $category) {
+                    Text("本線系統 (main)").tag(LinkCategory.main)
+                    Text("リレー系統 (relay)").tag(LinkCategory.relay)
+                    Text("光回線系統 (opt)").tag(LinkCategory.opt)
+                }
+                .pickerStyle(.segmented)
+            }
+        }
+        .formStyle(.grouped)
+        .scrollContentBackground(.hidden)
+        .background(Theme.bgDark)
+        .toolbar {
+            ToolbarItem(placement: .cancellationAction) {
+                Button("キャンセル") { dismiss() }
+            }
+            ToolbarItem(placement: .confirmationAction) {
+                Button("保存") {
+                    onSave(name.trimmingCharacters(in: .whitespaces), category)
+                    dismiss()
+                }
+                .disabled(name.trimmingCharacters(in: .whitespaces).isEmpty)
+            }
         }
     }
 }

@@ -153,6 +153,18 @@ final class SupabaseService: ObservableObject {
         try await client.from("links").update(["sort_order": order]).eq("id", value: id).execute()
     }
 
+    struct LinkEditPayload: Encodable {
+        let name: String
+        let category: String
+    }
+
+    func updateLink(id: String, name: String, category: LinkCategory) async throws {
+        try await client.from("links")
+            .update(LinkEditPayload(name: name, category: category.rawValue))
+            .eq("id", value: id)
+            .execute()
+    }
+
     // MARK: - Records
 
     func fetchRecords(programId: String) async throws -> [Record] {
@@ -198,6 +210,35 @@ final class SupabaseService: ObservableObject {
             .order("sort_order", ascending: true)
             .execute()
             .value
+    }
+
+    // MARK: - Account creation
+
+    private static let supabaseURL = URL(string: "https://iyzadjupyejeyeeyvwqm.supabase.co")!
+    private static let supabaseAnonKey = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Iml5emFkanVweWVqZXllZXl2d3FtIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODM1OTE2NjgsImV4cCI6MjA5OTE2NzY2OH0.T6oXWP6s35wg77Nzuez7zrWVg49n6FFI0NzkW9z6QCQ"
+
+    /// Creates a brand-new auth account without disturbing the currently signed-in (admin) session.
+    /// Uses a throwaway client with an isolated storage key so it never touches the main client's
+    /// persisted session.
+    func createUserAccount(email: String, password: String, role: UserRoleType) async throws {
+        let tempClient = SupabaseClient(
+            supabaseURL: Self.supabaseURL,
+            supabaseKey: Self.supabaseAnonKey,
+            options: SupabaseClientOptions(
+                auth: SupabaseClientOptions.AuthOptions(storageKey: "fpu-temp-signup-\(UUID().uuidString)")
+            )
+        )
+        let response = try await tempClient.auth.signUp(email: email, password: password)
+        let userId = response.user.id.uuidString
+
+        struct Payload: Encodable {
+            let id: String
+            let email: String
+            let role: String
+        }
+        try await client.from("user_roles")
+            .upsert(Payload(id: userId, email: email, role: role.rawValue), onConflict: "id")
+            .execute()
     }
 
     // MARK: - User roles
