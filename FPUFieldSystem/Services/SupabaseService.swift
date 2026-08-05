@@ -217,12 +217,17 @@ final class SupabaseService: ObservableObject {
 
     // MARK: - Realtime
 
-    func subscribeToRecords(onChange: @escaping () -> Void) -> RealtimeChannelV2 {
+    func subscribeToRecords(onSubscribed: @escaping () -> Void, onChange: @escaping () -> Void) -> RealtimeChannelV2 {
         let channel = client.channel("live-records-pipeline")
         let changes = channel.postgresChange(AnyAction.self, schema: "public", table: "records")
 
         Task {
-            try? await channel.subscribeWithError()
+            do {
+                try await channel.subscribeWithError()
+                onSubscribed()
+            } catch {
+                return
+            }
             for await _ in changes {
                 onChange()
             }

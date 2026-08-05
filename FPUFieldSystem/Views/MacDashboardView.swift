@@ -176,9 +176,14 @@ struct MacDashboardView: View {
                         .clipShape(RoundedRectangle(cornerRadius: 4))
                 }
                 if let value {
-                    Text("-\(value)")
-                        .font(.system(size: 20, weight: .black, design: .monospaced))
-                        .foregroundStyle(vm.statusColor(category: link.category, value: value))
+                    HStack(alignment: .firstTextBaseline, spacing: 3) {
+                        Text("-\(value)")
+                            .font(.system(size: 20, weight: .black, design: .monospaced))
+                            .foregroundStyle(vm.statusColor(category: link.category, value: value))
+                        Text("dBm")
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(.gray)
+                    }
                 } else {
                     Text("--")
                         .font(.system(size: 20, weight: .black, design: .monospaced))

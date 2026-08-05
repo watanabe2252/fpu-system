@@ -89,13 +89,18 @@ final class WorkspaceViewModel: ObservableObject {
 
     func subscribeRealtime() {
         guard channel == nil else { return }
-        channel = supabase.subscribeToRecords { [weak self] in
-            Task { @MainActor in
-                guard let self else { return }
-                self.realtimeConnected = true
-                await self.reloadRecords()
+        channel = supabase.subscribeToRecords(
+            onSubscribed: { [weak self] in
+                Task { @MainActor in
+                    self?.realtimeConnected = true
+                }
+            },
+            onChange: { [weak self] in
+                Task { @MainActor in
+                    await self?.reloadRecords()
+                }
             }
-        }
+        )
     }
 
     func unsubscribeRealtime() {
@@ -103,6 +108,7 @@ final class WorkspaceViewModel: ObservableObject {
             Task { await channel.unsubscribe() }
         }
         channel = nil
+        realtimeConnected = false
     }
 
     // MARK: - Mutations

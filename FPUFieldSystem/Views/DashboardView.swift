@@ -190,9 +190,14 @@ struct DashboardView: View {
                 }
                 Spacer()
                 if let value {
-                    Text("-\(value)")
-                        .font(.system(size: 18, weight: .black, design: .monospaced))
-                        .foregroundStyle(vm.statusColor(category: link.category, value: value))
+                    HStack(alignment: .firstTextBaseline, spacing: 2) {
+                        Text("-\(value)")
+                            .font(.system(size: 18, weight: .black, design: .monospaced))
+                            .foregroundStyle(vm.statusColor(category: link.category, value: value))
+                        Text("dBm")
+                            .font(.system(size: 8, weight: .bold))
+                            .foregroundStyle(.gray)
+                    }
                 } else {
                     Text("--")
                         .font(.system(size: 18, weight: .black, design: .monospaced))

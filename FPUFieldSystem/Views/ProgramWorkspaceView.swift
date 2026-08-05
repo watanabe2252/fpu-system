@@ -21,6 +21,10 @@ struct ProgramWorkspaceView: View {
     var body: some View {
         content
             .background(Theme.bgDark.ignoresSafeArea())
+            .task {
+                if vm.links.isEmpty { await vm.loadAll() }
+                vm.subscribeRealtime()
+            }
             .onDisappear { vm.unsubscribeRealtime() }
             .alert("番組名を編集", isPresented: $isEditingTitle) {
                 TextField("番組名", text: $editedTitle)
