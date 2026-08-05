@@ -261,15 +261,32 @@ struct MacInputView: View {
 
     @ViewBuilder
     private func specPicker(title: String, category: SpecMasterCategory, selection: Binding<String>) -> some View {
+        let options = vm.specMasters.filter { $0.category == category }
+        let currentLabel = options.first { $0.value == selection.wrappedValue }?.label ?? "未設定"
+
         VStack(alignment: .leading, spacing: 4) {
             Text(title).font(.system(size: 10, weight: .bold)).foregroundStyle(.gray)
-            Picker(title, selection: selection) {
-                Text("未設定").tag("")
-                ForEach(vm.specMasters.filter { $0.category == category }) { item in
-                    Text(item.label).tag(item.value)
+            Menu {
+                Button("未設定") { selection.wrappedValue = "" }
+                ForEach(options) { item in
+                    Button(item.label) { selection.wrappedValue = item.value }
                 }
+            } label: {
+                HStack(spacing: 4) {
+                    Text(currentLabel)
+                        .lineLimit(1)
+                        .truncationMode(.tail)
+                        .foregroundStyle(.white)
+                    Spacer(minLength: 2)
+                    Image(systemName: "chevron.up.chevron.down")
+                        .font(.system(size: 9, weight: .bold))
+                        .foregroundStyle(.gray)
+                }
+                .padding(.horizontal, 6)
+                .padding(.vertical, 4)
             }
-            .labelsHidden()
+            .menuStyle(.borderlessButton)
+            .frame(maxWidth: .infinity)
         }
         .frame(maxWidth: .infinity)
     }
