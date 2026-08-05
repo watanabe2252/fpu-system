@@ -1,4 +1,3 @@
-#if os(macOS)
 import SwiftUI
 
 struct MacDashboardView: View {
@@ -241,4 +240,3 @@ struct MacDashboardView: View {
         .font(.system(size: 10, weight: .medium, design: .monospaced))
     }
 }
-#endif

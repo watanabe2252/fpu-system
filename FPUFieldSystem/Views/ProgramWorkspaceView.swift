@@ -1,4 +1,7 @@
 import SwiftUI
+#if os(iOS)
+import UIKit
+#endif
 
 struct ProgramWorkspaceView: View {
     @EnvironmentObject private var supabase: SupabaseService
@@ -16,6 +19,19 @@ struct ProgramWorkspaceView: View {
     init(program: Program, onBack: @escaping () -> Void) {
         self.onBack = onBack
         _vm = StateObject(wrappedValue: WorkspaceViewModel(program: program, supabase: SupabaseService.shared))
+    }
+
+    /// macOS always gets the sidebar layout; on iOS only iPad does (iPhone keeps the
+    /// bottom-tab phone layout). NavigationSplitView itself further adapts the sidebar
+    /// to collapse/expand based on available width (e.g. iPad portrait vs landscape).
+    private var useSplitLayout: Bool {
+        #if os(macOS)
+        return true
+        #elseif os(iOS)
+        return UIDevice.current.userInterfaceIdiom == .pad
+        #else
+        return false
+        #endif
     }
 
     var body: some View {
@@ -40,40 +56,39 @@ struct ProgramWorkspaceView: View {
 
     @ViewBuilder
     private var content: some View {
-        #if os(macOS)
-        NavigationSplitView {
-            sidebar
-        } detail: {
-            detailView
-                .frame(maxWidth: .infinity, maxHeight: .infinity)
-        }
-        .navigationSplitViewStyle(.balanced)
-        #else
-        VStack(spacing: 0) {
-            header
-            TabView(selection: $selectedTab) {
-                DashboardView(vm: vm)
-                    .tabItem { Label("ダッシュボード", systemImage: "chart.bar.fill") }
-                    .tag(Tab.dashboard)
-
-                InputView(vm: vm)
-                    .tabItem { Label("データ入力", systemImage: "square.and.pencil") }
-                    .tag(Tab.input)
-
-                if supabase.currentUserRole == .admin {
-                    NavigationStack {
-                        MaintenanceView(vm: vm)
-                    }
-                    .tabItem { Label("メンテナンス", systemImage: "wrench.and.screwdriver.fill") }
-                    .tag(Tab.maintenance)
-                }
+        if useSplitLayout {
+            NavigationSplitView {
+                sidebar
+            } detail: {
+                detailView
+                    .frame(maxWidth: .infinity, maxHeight: .infinity)
             }
-            .tint(Theme.accentBlue)
+            .navigationSplitViewStyle(.balanced)
+        } else {
+            VStack(spacing: 0) {
+                header
+                TabView(selection: $selectedTab) {
+                    DashboardView(vm: vm)
+                        .tabItem { Label("ダッシュボード", systemImage: "chart.bar.fill") }
+                        .tag(Tab.dashboard)
+
+                    InputView(vm: vm)
+                        .tabItem { Label("データ入力", systemImage: "square.and.pencil") }
+                        .tag(Tab.input)
+
+                    if supabase.currentUserRole == .admin {
+                        NavigationStack {
+                            MaintenanceView(vm: vm)
+                        }
+                        .tabItem { Label("メンテナンス", systemImage: "wrench.and.screwdriver.fill") }
+                        .tag(Tab.maintenance)
+                    }
+                }
+                .tint(Theme.accentBlue)
+            }
         }
-        #endif
     }
 
-    #if os(macOS)
     @ViewBuilder
     private var detailView: some View {
         switch selectedTab {
@@ -84,6 +99,10 @@ struct ProgramWorkspaceView: View {
         case .maintenance:
             MacMaintenanceView(vm: vm)
         }
+    }
+
+    private var selectedTabBinding: Binding<Tab?> {
+        Binding(get: { selectedTab }, set: { selectedTab = $0 ?? .dashboard })
     }
 
     private var sidebar: some View {
@@ -136,7 +155,7 @@ struct ProgramWorkspaceView: View {
             }
             .padding(16)
 
-            List(selection: $selectedTab) {
+            List(selection: selectedTabBinding) {
                 Label("ダッシュボード", systemImage: "chart.bar.fill")
                     .tag(Tab.dashboard)
                 Label("データ入力", systemImage: "square.and.pencil")
@@ -150,7 +169,6 @@ struct ProgramWorkspaceView: View {
         }
         .background(Theme.cardBg)
     }
-    #endif
 
     private var header: some View {
         HStack {

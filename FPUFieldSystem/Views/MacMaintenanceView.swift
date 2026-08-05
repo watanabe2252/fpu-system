@@ -1,4 +1,3 @@
-#if os(macOS)
 import SwiftUI
 import UniformTypeIdentifiers
 
@@ -280,4 +279,3 @@ private struct EditLinkSheet: View {
         }
     }
 }
-#endif

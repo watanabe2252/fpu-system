@@ -1,4 +1,3 @@
-#if os(macOS)
 import SwiftUI
 
 struct MacInputView: View {
@@ -235,4 +234,3 @@ struct MacInputView: View {
         .buttonStyle(.bordered)
     }
 }
-#endif
