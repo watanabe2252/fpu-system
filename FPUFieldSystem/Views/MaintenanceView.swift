@@ -20,12 +20,17 @@ struct MaintenanceView: View {
     @State private var isReordering = false
     @State private var editingLink: Link?
 
+    @State private var showResetConfirm = false
+    @State private var resetStatus: String?
+    @State private var isResetting = false
+
     var body: some View {
         List {
             thresholdSection
             csvSection
             addLinkSection
             reorderSection
+            resetValuesSection
             userAdminSection
         }
         #if os(iOS)
@@ -49,6 +54,14 @@ struct MaintenanceView: View {
             EditLinkSheet(link: link) { name, category in
                 Task { try? await vm.updateLink(link, name: name, category: category) }
             }
+        }
+        .alert("すべての電界値を未入力に戻しますか?", isPresented: $showResetConfirm) {
+            Button("キャンセル", role: .cancel) {}
+            Button("リセットする", role: .destructive) {
+                Task { await resetAllValues() }
+            }
+        } message: {
+            Text("この大会の全ての受信点・全フェーズの電界強度が「未入力」に戻ります。この操作は取り消せません。")
         }
     }
 
@@ -332,6 +345,55 @@ struct MaintenanceView: View {
         } catch {
             orderStatus = "❌ \(error.localizedDescription)"
         }
+    }
+
+    // MARK: - 電界値の一括リセット
+
+    private var resetValuesSection: some View {
+        Section {
+            VStack(alignment: .leading, spacing: 8) {
+                Text("この大会の全受信点・全フェーズの電界強度を「未入力」状態に戻します。過去にCSVインポートなどで自動的に-60/-15dBmが入ってしまったデータをリセットしたい場合に使います。")
+                    .font(.system(size: 10, weight: .bold))
+                    .foregroundStyle(.gray)
+
+                Button(role: .destructive) {
+                    showResetConfirm = true
+                } label: {
+                    if isResetting {
+                        ProgressView().tint(Theme.rose)
+                    } else {
+                        Text("すべての電界値を未入力に戻す")
+                            .font(.system(size: 12, weight: .black))
+                    }
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 10)
+                .background(Theme.rose.opacity(0.15))
+                .foregroundStyle(Theme.rose)
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.rose.opacity(0.4)))
+                .disabled(isResetting)
+
+                if let resetStatus {
+                    Text(resetStatus).font(.system(size: 10, weight: .bold)).foregroundStyle(Theme.accentGreen)
+                }
+            }
+            .listRowBackground(Theme.cardBg)
+        } header: {
+            Text("電界値の一括リセット").foregroundStyle(Theme.accentBlue)
+        }
+    }
+
+    private func resetAllValues() async {
+        isResetting = true
+        resetStatus = nil
+        do {
+            try await vm.resetAllValues()
+            resetStatus = "✔ すべての電界値を未入力に戻しました"
+        } catch {
+            resetStatus = "❌ \(error.localizedDescription)"
+        }
+        isResetting = false
     }
 
     // MARK: - ユーザー管理

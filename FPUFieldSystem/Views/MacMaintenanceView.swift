@@ -20,6 +20,10 @@ struct MacMaintenanceView: View {
     @State private var showUserAdmin = false
     @State private var editingLink: Link?
 
+    @State private var showResetConfirm = false
+    @State private var resetStatus: String?
+    @State private var isResetting = false
+
     var body: some View {
         Form {
             Section("動的アラートしきい値集中管理") {
@@ -93,6 +97,25 @@ struct MacMaintenanceView: View {
                 }
             }
 
+            Section("電界値の一括リセット") {
+                Text("この大会の全受信点・全フェーズの電界強度を「未入力」状態に戻します。過去にCSVインポートなどで自動的に-60/-15dBmが入ってしまったデータをリセットしたい場合に使います。")
+                    .foregroundStyle(.secondary)
+                Button(role: .destructive) {
+                    showResetConfirm = true
+                } label: {
+                    if isResetting {
+                        ProgressView().controlSize(.small)
+                    } else {
+                        Text("すべての電界値を未入力に戻す")
+                    }
+                }
+                .disabled(isResetting)
+
+                if let resetStatus {
+                    Text(resetStatus).foregroundStyle(Theme.accentGreen)
+                }
+            }
+
             Section("ポジション別 アカウント権限管理") {
                 Text("アプリ内での動的権限昇格・降格画面へ遷移します。")
                     .foregroundStyle(.secondary)
@@ -120,6 +143,26 @@ struct MacMaintenanceView: View {
             }
             .frame(minWidth: 380, minHeight: 260)
         }
+        .alert("すべての電界値を未入力に戻しますか?", isPresented: $showResetConfirm) {
+            Button("キャンセル", role: .cancel) {}
+            Button("リセットする", role: .destructive) {
+                Task { await resetAllValues() }
+            }
+        } message: {
+            Text("この大会の全ての受信点・全フェーズの電界強度が「未入力」に戻ります。この操作は取り消せません。")
+        }
+    }
+
+    private func resetAllValues() async {
+        isResetting = true
+        resetStatus = nil
+        do {
+            try await vm.resetAllValues()
+            resetStatus = "✔ すべての電界値を未入力に戻しました"
+        } catch {
+            resetStatus = "❌ \(error.localizedDescription)"
+        }
+        isResetting = false
     }
 
     private func thresholdSlider(label: String, value: Binding<Double>, range: ClosedRange<Double>, color: Color) -> some View {

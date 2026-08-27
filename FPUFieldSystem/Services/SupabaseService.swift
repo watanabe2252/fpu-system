@@ -202,6 +202,18 @@ final class SupabaseService: ObservableObject {
             .execute()
     }
 
+    struct NullValuePayload: Encodable {
+        let value: Int?
+    }
+
+    /// Resets every record's electric field value back to "not entered" (NULL) for a program.
+    func resetAllRecordValues(programId: String) async throws {
+        try await client.from("records")
+            .update(NullValuePayload(value: nil))
+            .eq("program_id", value: programId)
+            .execute()
+    }
+
     // MARK: - Locations (map)
 
     func fetchLocations(programId: String) async throws -> [MapLocation] {

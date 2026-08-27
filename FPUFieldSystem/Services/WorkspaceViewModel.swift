@@ -268,6 +268,12 @@ final class WorkspaceViewModel: ObservableObject {
         await reloadLinks()
     }
 
+    /// Resets every record's electric field value back to "not entered" for this program.
+    func resetAllValues() async throws {
+        try await supabase.resetAllRecordValues(programId: program.id)
+        await reloadRecords()
+    }
+
     func importCSV(text: String) async throws -> Int {
         let lines = text.split(separator: "\n", omittingEmptySubsequences: true).map { $0.trimmingCharacters(in: .whitespacesAndNewlines) }
         guard lines.count > 1 else { return 0 }
