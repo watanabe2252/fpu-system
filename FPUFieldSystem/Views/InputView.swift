@@ -14,6 +14,7 @@ struct InputView: View {
     @State private var txModel = ""
     @State private var rxModel = ""
     @State private var dbValue = 60
+    @State private var hasEnteredValue = false
     @State private var fieldMemo = ""
     @State private var centerMemo = ""
     @State private var applyAll = false
@@ -110,15 +111,23 @@ struct InputView: View {
                         stepButton("-5") { changeValue(-5) }
                         stepButton("-1") { changeValue(-1) }
                         HStack(spacing: 2) {
-                            Text("-").foregroundStyle(.gray)
-                            TextField("", value: $dbValue, format: .number)
-                                #if os(iOS)
-                                .keyboardType(.numberPad)
-                                #endif
-                                .multilineTextAlignment(.center)
-                                .frame(width: 44)
-                                .font(.system(size: 22, weight: .black, design: .monospaced))
-                                .foregroundStyle(.white)
+                            if hasEnteredValue {
+                                Text("-").foregroundStyle(.gray)
+                                TextField("", value: dbValueBinding, format: .number)
+                                    #if os(iOS)
+                                    .keyboardType(.numberPad)
+                                    #endif
+                                    .multilineTextAlignment(.center)
+                                    .frame(width: 44)
+                                    .font(.system(size: 22, weight: .black, design: .monospaced))
+                                    .foregroundStyle(.white)
+                            } else {
+                                Text("未入力")
+                                    .font(.system(size: 15, weight: .black))
+                                    .foregroundStyle(.gray)
+                                    .frame(width: 44)
+                                    .onTapGesture { hasEnteredValue = true }
+                            }
                             Text("dBm").font(.system(size: 11, weight: .bold)).foregroundStyle(.gray)
                         }
                         .padding(.horizontal, 10)
@@ -128,6 +137,15 @@ struct InputView: View {
                         .overlay(RoundedRectangle(cornerRadius: 12).stroke(Theme.borderStroke))
                         stepButton("+1") { changeValue(1) }
                         stepButton("+5") { changeValue(5) }
+                    }
+                    if hasEnteredValue {
+                        Button {
+                            hasEnteredValue = false
+                        } label: {
+                            Text("未入力に戻す")
+                                .font(.system(size: 10, weight: .bold))
+                                .foregroundStyle(Theme.rose)
+                        }
                     }
                 }
 
@@ -184,13 +202,25 @@ struct InputView: View {
         }
     }
 
+    private var dbValueBinding: Binding<Int> {
+        Binding(
+            get: { dbValue },
+            set: { newValue in
+                dbValue = newValue
+                hasEnteredValue = true
+            }
+        )
+    }
+
     private func changeValue(_ amount: Int) {
         dbValue = max(0, min(99, dbValue + amount))
+        hasEnteredValue = true
     }
 
     private func loadCurrentRecord() {
         guard let linkId = selectedLinkId else { return }
         if let rec = vm.record(linkId: linkId, phase: phase) {
+            hasEnteredValue = rec.value != nil
             dbValue = rec.value ?? vm.defaultValue(for: selectedLink?.category ?? .opt)
             fieldMemo = rec.fieldMemo ?? ""
             centerMemo = rec.centerMemo ?? ""
@@ -201,6 +231,7 @@ struct InputView: View {
             txModel = rec.txModel ?? ""
             rxModel = rec.rxModel ?? ""
         } else {
+            hasEnteredValue = false
             dbValue = vm.defaultValue(for: selectedLink?.category ?? .opt)
             fieldMemo = ""
             centerMemo = ""
@@ -223,7 +254,7 @@ struct InputView: View {
             try await vm.submitRecord(
                 linkId: linkId,
                 phase: phase,
-                value: dbValue,
+                value: hasEnteredValue ? dbValue : nil,
                 fieldMemo: fieldMemo.trimmingCharacters(in: .whitespaces),
                 centerMemo: centerMemo.trimmingCharacters(in: .whitespaces),
                 fpuChannel: customChannel.trimmingCharacters(in: .whitespaces),

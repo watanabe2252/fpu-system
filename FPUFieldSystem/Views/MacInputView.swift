@@ -14,6 +14,7 @@ struct MacInputView: View {
     @State private var txModel = ""
     @State private var rxModel = ""
     @State private var dbValue = 60
+    @State private var hasEnteredValue = false
     @State private var fieldMemo = ""
     @State private var centerMemo = ""
     @State private var applyAll = false
@@ -97,12 +98,20 @@ struct MacInputView: View {
                     stepButton("-5") { changeValue(-5) }
                     stepButton("-1") { changeValue(-1) }
                     HStack(spacing: 4) {
-                        Text("-").foregroundStyle(.secondary)
-                        TextField("", value: $dbValue, format: .number)
-                            .multilineTextAlignment(.center)
-                            .textFieldStyle(.plain)
-                            .frame(width: 50)
-                            .font(.system(size: 24, weight: .black, design: .monospaced))
+                        if hasEnteredValue {
+                            Text("-").foregroundStyle(.secondary)
+                            TextField("", value: dbValueBinding, format: .number)
+                                .multilineTextAlignment(.center)
+                                .textFieldStyle(.plain)
+                                .frame(width: 50)
+                                .font(.system(size: 24, weight: .black, design: .monospaced))
+                        } else {
+                            Text("未入力")
+                                .font(.system(size: 15, weight: .black))
+                                .foregroundStyle(.secondary)
+                                .frame(width: 50)
+                                .onTapGesture { hasEnteredValue = true }
+                        }
                         Text("dBm").foregroundStyle(.secondary)
                     }
                     .padding(.horizontal, 10)
@@ -111,6 +120,12 @@ struct MacInputView: View {
                     .clipShape(RoundedRectangle(cornerRadius: 8))
                     stepButton("+1") { changeValue(1) }
                     stepButton("+5") { changeValue(5) }
+                    if hasEnteredValue {
+                        Button("未入力に戻す") { hasEnteredValue = false }
+                            .buttonStyle(.plain)
+                            .font(.system(size: 10, weight: .bold))
+                            .foregroundStyle(Theme.rose)
+                    }
                     Spacer()
                 }
             }
@@ -167,13 +182,25 @@ struct MacInputView: View {
         }
     }
 
+    private var dbValueBinding: Binding<Int> {
+        Binding(
+            get: { dbValue },
+            set: { newValue in
+                dbValue = newValue
+                hasEnteredValue = true
+            }
+        )
+    }
+
     private func changeValue(_ amount: Int) {
         dbValue = max(0, min(99, dbValue + amount))
+        hasEnteredValue = true
     }
 
     private func loadCurrentRecord() {
         guard let linkId = selectedLinkId else { return }
         if let rec = vm.record(linkId: linkId, phase: phase) {
+            hasEnteredValue = rec.value != nil
             dbValue = rec.value ?? vm.defaultValue(for: selectedLink?.category ?? .opt)
             fieldMemo = rec.fieldMemo ?? ""
             centerMemo = rec.centerMemo ?? ""
@@ -184,6 +211,7 @@ struct MacInputView: View {
             txModel = rec.txModel ?? ""
             rxModel = rec.rxModel ?? ""
         } else {
+            hasEnteredValue = false
             dbValue = vm.defaultValue(for: selectedLink?.category ?? .opt)
             fieldMemo = ""
             centerMemo = ""
@@ -206,7 +234,7 @@ struct MacInputView: View {
             try await vm.submitRecord(
                 linkId: linkId,
                 phase: phase,
-                value: dbValue,
+                value: hasEnteredValue ? dbValue : nil,
                 fieldMemo: fieldMemo.trimmingCharacters(in: .whitespaces),
                 centerMemo: centerMemo.trimmingCharacters(in: .whitespaces),
                 fpuChannel: customChannel.trimmingCharacters(in: .whitespaces),

@@ -189,7 +189,7 @@ final class WorkspaceViewModel: ObservableObject {
     func submitRecord(
         linkId: String,
         phase: Phase,
-        value: Int,
+        value: Int?,
         fieldMemo: String,
         centerMemo: String,
         fpuChannel: String,
@@ -204,7 +204,7 @@ final class WorkspaceViewModel: ObservableObject {
         var payloads: [SupabaseService.RecordUpsertPayload] = []
         for p in targetPhases {
             let existing = record(linkId: linkId, phase: p)
-            let v = (p == phase) ? value : (existing?.value ?? defaultValue(for: links.first { $0.id == linkId }?.category ?? .opt))
+            let v = (p == phase) ? value : existing?.value
             payloads.append(SupabaseService.RecordUpsertPayload(
                 program_id: program.id,
                 link_id: linkId,
@@ -226,12 +226,11 @@ final class WorkspaceViewModel: ObservableObject {
 
     func submitCenterMemoQuickUpdate(linkId: String, phase: Phase, centerMemo: String?, fpuChannel: String?) async throws {
         let existing = record(linkId: linkId, phase: phase)
-        let category = links.first { $0.id == linkId }?.category ?? .opt
         let payload = SupabaseService.RecordUpsertPayload(
             program_id: program.id,
             link_id: linkId,
             phase: phase.rawValue,
-            value: existing?.value ?? defaultValue(for: category),
+            value: existing?.value,
             field_memo: existing?.fieldMemo ?? "",
             center_memo: centerMemo ?? existing?.centerMemo ?? "",
             fpu_channel: fpuChannel ?? existing?.fpuChannel ?? "",
@@ -303,11 +302,12 @@ final class WorkspaceViewModel: ObservableObject {
 
             var recordPayloads: [SupabaseService.RecordUpsertPayload] = []
             for phase in Phase.allCases {
+                let existingValue = record(linkId: link.id, phase: phase)?.value
                 recordPayloads.append(SupabaseService.RecordUpsertPayload(
                     program_id: program.id,
                     link_id: link.id,
                     phase: phase.rawValue,
-                    value: defaultValue(for: category),
+                    value: existingValue,
                     field_memo: "",
                     center_memo: "",
                     fpu_channel: fpuChannel,
