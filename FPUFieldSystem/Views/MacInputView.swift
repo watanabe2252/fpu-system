@@ -172,9 +172,24 @@ struct MacInputView: View {
             loadCurrentRecord()
         }
         .onChange(of: phase) { _, _ in loadCurrentRecord() }
+        .onChange(of: vm.pendingInputSelection) { _, newValue in
+            applyPendingSelection(newValue)
+        }
+        .onAppear {
+            if vm.pendingInputSelection != nil {
+                applyPendingSelection(vm.pendingInputSelection)
+            }
+        }
     }
 
     private var savedLinkKey: String { "fpu_saved_link_\(vm.program.id)" }
+
+    private func applyPendingSelection(_ selection: WorkspaceViewModel.InputSelection?) {
+        guard let selection else { return }
+        selectedLinkId = selection.linkId
+        phase = selection.phase
+        vm.pendingInputSelection = nil
+    }
 
     private func syncChannel() {
         if !channelBase.isEmpty || !polarization.isEmpty {

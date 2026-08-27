@@ -21,6 +21,18 @@ final class WorkspaceViewModel: ObservableObject {
     @Published var optLow = 21
     @Published var optHigh = 15
 
+    struct InputSelection: Equatable {
+        let linkId: String
+        let phase: Phase
+    }
+    /// Set by the dashboard when the user taps a cell, asking the input screen to
+    /// jump straight to that link/phase. The input view consumes and clears it.
+    @Published var pendingInputSelection: InputSelection?
+
+    func requestInput(linkId: String, phase: Phase) {
+        pendingInputSelection = InputSelection(linkId: linkId, phase: phase)
+    }
+
     private var channel: RealtimeChannelV2?
 
     init(program: Program, supabase: SupabaseService) {

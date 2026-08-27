@@ -20,6 +20,7 @@ struct InputView: View {
     @State private var applyAll = false
     @State private var statusMessage: String?
     @State private var isSubmitting = false
+    @State private var showDetails = false
 
     private let channelOptions = ["C1", "C2", "C3", "C4", "E1", "E2", "E3", "E4", "E5", "E6", "E7", "E8", "F1", "F2", "F3", "F4", "F5", "F6", "F7", "F8"]
 
@@ -35,14 +36,41 @@ struct InputView: View {
                     .foregroundStyle(Theme.accentBlue)
 
                 fieldBlock(title: "① 対象回線 (リンク)") {
-                    Picker("リンク", selection: $selectedLinkId) {
-                        Text("-- 選択 --").tag(String?.none)
-                        ForEach(vm.links) { link in
-                            Text(link.name.replacingOccurrences(of: "\n", with: " ")).tag(Optional(link.id))
+                    HStack(spacing: 8) {
+                        Button {
+                            stepLink(-1)
+                        } label: {
+                            Image(systemName: "chevron.left")
+                                .font(.system(size: 14, weight: .black))
+                                .foregroundStyle(selectedLinkIndex.map { $0 > 0 } ?? false ? .white : .gray.opacity(0.3))
+                                .frame(width: 36, height: 36)
+                                .background(Theme.bgDark)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
+                        .disabled(!(selectedLinkIndex.map { $0 > 0 } ?? false))
+
+                        Picker("リンク", selection: $selectedLinkId) {
+                            Text("-- 選択 --").tag(String?.none)
+                            ForEach(vm.links) { link in
+                                Text(link.name.replacingOccurrences(of: "\n", with: " ")).tag(Optional(link.id))
+                            }
+                        }
+                        .pickerStyle(.menu)
+                        .tint(.white)
+                        .frame(maxWidth: .infinity)
+
+                        Button {
+                            stepLink(1)
+                        } label: {
+                            Image(systemName: "chevron.right")
+                                .font(.system(size: 14, weight: .black))
+                                .foregroundStyle(selectedLinkIndex.map { $0 < vm.links.count - 1 } ?? false ? .white : .gray.opacity(0.3))
+                                .frame(width: 36, height: 36)
+                                .background(Theme.bgDark)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                        }
+                        .disabled(!(selectedLinkIndex.map { $0 < vm.links.count - 1 } ?? false))
                     }
-                    .pickerStyle(.menu)
-                    .tint(.white)
                 }
 
                 fieldBlock(title: "② 現在のフェーズ (日程)") {
@@ -54,57 +82,8 @@ struct InputView: View {
                     .pickerStyle(.segmented)
                 }
 
-                fieldBlock(title: "③ 使用FPUチャンネル", color: Theme.amber) {
-                    HStack(spacing: 8) {
-                        Picker("Ch", selection: $channelBase) {
-                            Text("--").tag("")
-                            ForEach(channelOptions, id: \.self) { Text($0).tag($0) }
-                        }
-                        .pickerStyle(.menu)
-                        .tint(Theme.amber)
-
-                        Picker("偏波", selection: $polarization) {
-                            Text("--").tag("")
-                            Text("H").tag("H")
-                            Text("V").tag("V")
-                        }
-                        .pickerStyle(.menu)
-                        .tint(Theme.amber)
-
-                        TextField("手入力可", text: $customChannel)
-                            #if os(iOS)
-                            .textInputAutocapitalization(.characters)
-                            #endif
-                            .padding(10)
-                            .background(Theme.bgDark)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
-                            .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.amber.opacity(0.4)))
-                            .foregroundStyle(Theme.amber)
-                    }
-                    .onChange(of: channelBase) { _, _ in syncChannel() }
-                    .onChange(of: polarization) { _, _ in syncChannel() }
-                }
-
-                fieldBlock(title: "④ 回線スペック＆機器パラメータ") {
-                    VStack(spacing: 8) {
-                        HStack(spacing: 8) {
-                            specPicker(title: "変調方式", category: .modulation, selection: $modType)
-                            specPicker(title: "プリセット", category: .preset, selection: $presetType)
-                            specPicker(title: "TS-Rate", category: .tsRate, selection: $tsRate)
-                        }
-                        HStack(spacing: 8) {
-                            labeledTextField(title: "送信機型番 (TX)", placeholder: "例: PF-900", text: $txModel)
-                            labeledTextField(title: "受信機型番 (RX)", placeholder: "例: FR-800", text: $rxModel)
-                        }
-                        Toggle("このスペック情報を全日程に一括反映する", isOn: $applyAll)
-                            .font(.system(size: 11, weight: .bold))
-                            .foregroundStyle(.white)
-                            .tint(Theme.accentBlue)
-                    }
-                }
-
                 VStack(spacing: 8) {
-                    Text("⑤ 電界強度数値入力")
+                    Text("③ 電界強度数値入力")
                         .font(.system(size: 11, weight: .black))
                         .foregroundStyle(.gray)
                     HStack(spacing: 10) {
@@ -149,6 +128,75 @@ struct InputView: View {
                     }
                 }
 
+                DisclosureGroup(isExpanded: $showDetails) {
+                    VStack(spacing: 12) {
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("使用FPUチャンネル")
+                                .font(.system(size: 11, weight: .black))
+                                .foregroundStyle(Theme.amber)
+                            HStack(spacing: 8) {
+                                Picker("Ch", selection: $channelBase) {
+                                    Text("--").tag("")
+                                    ForEach(channelOptions, id: \.self) { Text($0).tag($0) }
+                                }
+                                .pickerStyle(.menu)
+                                .tint(Theme.amber)
+
+                                Picker("偏波", selection: $polarization) {
+                                    Text("--").tag("")
+                                    Text("H").tag("H")
+                                    Text("V").tag("V")
+                                }
+                                .pickerStyle(.menu)
+                                .tint(Theme.amber)
+
+                                TextField("手入力可", text: $customChannel)
+                                    #if os(iOS)
+                                    .textInputAutocapitalization(.characters)
+                                    #endif
+                                    .padding(10)
+                                    .background(Theme.bgDark)
+                                    .clipShape(RoundedRectangle(cornerRadius: 10))
+                                    .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.amber.opacity(0.4)))
+                                    .foregroundStyle(Theme.amber)
+                            }
+                            .onChange(of: channelBase) { _, _ in syncChannel() }
+                            .onChange(of: polarization) { _, _ in syncChannel() }
+                        }
+
+                        VStack(alignment: .leading, spacing: 6) {
+                            Text("回線スペック＆機器パラメータ")
+                                .font(.system(size: 11, weight: .black))
+                                .foregroundStyle(Theme.accentBlue)
+                            VStack(spacing: 8) {
+                                HStack(spacing: 8) {
+                                    specPicker(title: "変調方式", category: .modulation, selection: $modType)
+                                    specPicker(title: "プリセット", category: .preset, selection: $presetType)
+                                    specPicker(title: "TS-Rate", category: .tsRate, selection: $tsRate)
+                                }
+                                HStack(spacing: 8) {
+                                    labeledTextField(title: "送信機型番 (TX)", placeholder: "例: PF-900", text: $txModel)
+                                    labeledTextField(title: "受信機型番 (RX)", placeholder: "例: FR-800", text: $rxModel)
+                                }
+                                Toggle("このスペック情報を全日程に一括反映する", isOn: $applyAll)
+                                    .font(.system(size: 11, weight: .bold))
+                                    .foregroundStyle(.white)
+                                    .tint(Theme.accentBlue)
+                            }
+                        }
+                    }
+                    .padding(.top, 10)
+                } label: {
+                    Text("チャンネル・スペック設定")
+                        .font(.system(size: 12, weight: .black))
+                        .foregroundStyle(.gray)
+                }
+                .padding(12)
+                .background(Theme.cardBg)
+                .clipShape(RoundedRectangle(cornerRadius: 14))
+                .overlay(RoundedRectangle(cornerRadius: 14).stroke(Theme.borderStroke))
+                .tint(.white)
+
                 VStack(spacing: 8) {
                     labeledTextField(title: "現場メモ", placeholder: "例: アンテナ追尾完了、安定", text: $fieldMemo, color: Theme.accentGreen)
                     labeledTextField(title: "センターメモ", placeholder: "例: センター側DAdown確認", text: $centerMemo, color: Theme.accentBlue)
@@ -192,9 +240,36 @@ struct InputView: View {
             loadCurrentRecord()
         }
         .onChange(of: phase) { _, _ in loadCurrentRecord() }
+        .onChange(of: vm.pendingInputSelection) { _, newValue in
+            applyPendingSelection(newValue)
+        }
+        .onAppear {
+            if vm.pendingInputSelection != nil {
+                applyPendingSelection(vm.pendingInputSelection)
+            }
+        }
     }
 
     private var savedLinkKey: String { "fpu_saved_link_\(vm.program.id)" }
+
+    private var selectedLinkIndex: Int? {
+        guard let selectedLinkId else { return nil }
+        return vm.links.firstIndex { $0.id == selectedLinkId }
+    }
+
+    private func stepLink(_ delta: Int) {
+        guard let index = selectedLinkIndex else { return }
+        let newIndex = index + delta
+        guard vm.links.indices.contains(newIndex) else { return }
+        selectedLinkId = vm.links[newIndex].id
+    }
+
+    private func applyPendingSelection(_ selection: WorkspaceViewModel.InputSelection?) {
+        guard let selection else { return }
+        selectedLinkId = selection.linkId
+        phase = selection.phase
+        vm.pendingInputSelection = nil
+    }
 
     private func syncChannel() {
         if !channelBase.isEmpty || !polarization.isEmpty {

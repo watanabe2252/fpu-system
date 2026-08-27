@@ -225,6 +225,10 @@ struct DashboardView: View {
         .background(vm.statusBackground(category: link.category, value: value))
         .clipShape(RoundedRectangle(cornerRadius: 10))
         .overlay(RoundedRectangle(cornerRadius: 10).stroke(Theme.borderStroke))
+        .contentShape(Rectangle())
+        .onTapGesture {
+            vm.requestInput(linkId: link.id, phase: phase)
+        }
     }
 
     private func specBlock(record: Record?) -> some View {

@@ -1,5 +1,6 @@
 import SwiftUI
 import MapKit
+import CoreLocation
 
 struct MapPointsEditorView: View {
     @ObservedObject var vm: WorkspaceViewModel
@@ -11,6 +12,9 @@ struct MapPointsEditorView: View {
     @State private var isSaving = false
     @State private var latText = ""
     @State private var lonText = ""
+    @State private var addressText = ""
+    @State private var isGeocoding = false
+    private let geocoder = CLGeocoder()
 
     var body: some View {
         VStack(spacing: 0) {
@@ -63,7 +67,25 @@ struct MapPointsEditorView: View {
                         }
                     }
 
-                    Text("② 緯度経度を直接入力することもできます。")
+                    Text("② 住所を入力すると緯度経度を自動取得できます。")
+                        .font(.system(size: 11, weight: .bold))
+                        .foregroundStyle(.gray)
+                    HStack(spacing: 8) {
+                        TextField("住所 (例: 東京都渋谷区神南1-1-1)", text: $addressText)
+                            .textFieldStyle(.roundedBorder)
+                        Button {
+                            Task { await geocodeAddress() }
+                        } label: {
+                            if isGeocoding {
+                                ProgressView().controlSize(.small)
+                            } else {
+                                Text("住所から取得")
+                            }
+                        }
+                        .disabled(addressText.trimmingCharacters(in: .whitespaces).isEmpty || isGeocoding)
+                    }
+
+                    Text("③ 緯度経度を直接入力・修正することもできます。")
                         .font(.system(size: 11, weight: .bold))
                         .foregroundStyle(.gray)
                     HStack(spacing: 8) {
@@ -127,6 +149,7 @@ struct MapPointsEditorView: View {
     }
 
     private func loadTextFields(for name: String?) {
+        addressText = ""
         guard let name, let location = vm.location(named: name) else {
             latText = ""
             lonText = ""
@@ -134,6 +157,28 @@ struct MapPointsEditorView: View {
         }
         latText = String(location.latitude)
         lonText = String(location.longitude)
+    }
+
+    private func geocodeAddress() async {
+        let query = addressText.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !query.isEmpty else { return }
+        isGeocoding = true
+        statusMessage = nil
+        do {
+            let placemarks = try await geocoder.geocodeAddressString(query)
+            guard let coordinate = placemarks.first?.location?.coordinate else {
+                statusMessage = "❌ 住所から位置を特定できませんでした"
+                isGeocoding = false
+                return
+            }
+            latText = String(coordinate.latitude)
+            lonText = String(coordinate.longitude)
+            cameraPosition = .region(MKCoordinateRegion(center: coordinate, latitudinalMeters: 800, longitudinalMeters: 800))
+            statusMessage = "✔ 住所から座標を取得しました。内容を確認して「座標を保存」を押してください"
+        } catch {
+            statusMessage = "❌ \(error.localizedDescription)"
+        }
+        isGeocoding = false
     }
 
     private func save(name: String, coordinate: CLLocationCoordinate2D) async {

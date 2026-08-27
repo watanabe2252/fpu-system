@@ -13,7 +13,7 @@ struct ProgramWorkspaceView: View {
     @State private var editedTitle = ""
 
     enum Tab: Hashable {
-        case dashboard, map, input, maintenance
+        case dashboard, map, info, input, maintenance
     }
 
     init(program: Program, onBack: @escaping () -> Void) {
@@ -42,6 +42,9 @@ struct ProgramWorkspaceView: View {
                 vm.subscribeRealtime()
             }
             .onDisappear { vm.unsubscribeRealtime() }
+            .onChange(of: vm.pendingInputSelection) { _, newValue in
+                if newValue != nil { selectedTab = .input }
+            }
             .alert("番組名を編集", isPresented: $isEditingTitle) {
                 TextField("番組名", text: $editedTitle)
                 Button("キャンセル", role: .cancel) {}
@@ -76,6 +79,10 @@ struct ProgramWorkspaceView: View {
                         .tabItem { Label("地図", systemImage: "map.fill") }
                         .tag(Tab.map)
 
+                    LinkInfoView(vm: vm)
+                        .tabItem { Label("受信点情報", systemImage: "list.bullet.rectangle.fill") }
+                        .tag(Tab.info)
+
                     InputView(vm: vm)
                         .tabItem { Label("データ入力", systemImage: "square.and.pencil") }
                         .tag(Tab.input)
@@ -100,6 +107,8 @@ struct ProgramWorkspaceView: View {
             MacDashboardView(vm: vm)
         case .map:
             LinkMapView(vm: vm)
+        case .info:
+            LinkInfoView(vm: vm)
         case .input:
             MacInputView(vm: vm)
         case .maintenance:
@@ -166,6 +175,8 @@ struct ProgramWorkspaceView: View {
                     .tag(Tab.dashboard)
                 Label("地図", systemImage: "map.fill")
                     .tag(Tab.map)
+                Label("受信点情報", systemImage: "list.bullet.rectangle.fill")
+                    .tag(Tab.info)
                 Label("データ入力", systemImage: "square.and.pencil")
                     .tag(Tab.input)
                 if supabase.currentUserRole == .admin {

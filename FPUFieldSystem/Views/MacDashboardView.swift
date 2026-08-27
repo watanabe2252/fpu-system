@@ -209,6 +209,10 @@ struct MacDashboardView: View {
         .padding(10)
         .background(vm.statusBackground(category: link.category, value: value))
         .clipShape(RoundedRectangle(cornerRadius: 8))
+        .contentShape(Rectangle())
+        .onTapGesture {
+            vm.requestInput(linkId: link.id, phase: phase)
+        }
     }
 
     private func specBlock(record: Record?) -> some View {
