@@ -175,6 +175,10 @@ final class SupabaseService: ObservableObject {
             .value
     }
 
+    /// `value` is encoded manually so that `nil` is always sent as an explicit JSON
+    /// `null` (meaning "not entered"), rather than Swift's synthesized `encodeIfPresent`
+    /// silently omitting the key — which would leave an existing DB value untouched
+    /// instead of clearing it.
     struct RecordUpsertPayload: Encodable {
         let program_id: String
         let link_id: String
@@ -188,6 +192,30 @@ final class SupabaseService: ObservableObject {
         let ts_rate: String
         let tx_model: String
         let rx_model: String
+
+        enum CodingKeys: String, CodingKey {
+            case program_id, link_id, phase, value, field_memo, center_memo, fpu_channel, mod_type, preset_type, ts_rate, tx_model, rx_model
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(program_id, forKey: .program_id)
+            try container.encode(link_id, forKey: .link_id)
+            try container.encode(phase, forKey: .phase)
+            if let value {
+                try container.encode(value, forKey: .value)
+            } else {
+                try container.encodeNil(forKey: .value)
+            }
+            try container.encode(field_memo, forKey: .field_memo)
+            try container.encode(center_memo, forKey: .center_memo)
+            try container.encode(fpu_channel, forKey: .fpu_channel)
+            try container.encode(mod_type, forKey: .mod_type)
+            try container.encode(preset_type, forKey: .preset_type)
+            try container.encode(ts_rate, forKey: .ts_rate)
+            try container.encode(tx_model, forKey: .tx_model)
+            try container.encode(rx_model, forKey: .rx_model)
+        }
     }
 
     func upsertRecord(_ payload: RecordUpsertPayload) async throws {
@@ -202,14 +230,22 @@ final class SupabaseService: ObservableObject {
             .execute()
     }
 
+    /// Encodes explicitly as `{"value":null}`. A plain `let value: Int?` would use
+    /// Swift's synthesized `encodeIfPresent`, which *omits* the key entirely when nil
+    /// instead of sending JSON null — silently turning this into a no-op update.
     struct NullValuePayload: Encodable {
-        let value: Int?
+        enum CodingKeys: String, CodingKey { case value }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encodeNil(forKey: .value)
+        }
     }
 
     /// Resets every record's electric field value back to "not entered" (NULL) for a program.
     func resetAllRecordValues(programId: String) async throws {
         try await client.from("records")
-            .update(NullValuePayload(value: nil))
+            .update(NullValuePayload())
             .eq("program_id", value: programId)
             .execute()
     }
