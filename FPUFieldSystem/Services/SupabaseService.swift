@@ -202,6 +202,34 @@ final class SupabaseService: ObservableObject {
             .execute()
     }
 
+    // MARK: - Locations (map)
+
+    func fetchLocations(programId: String) async throws -> [MapLocation] {
+        try await client.from("locations")
+            .select()
+            .eq("program_id", value: programId)
+            .execute()
+            .value
+    }
+
+    struct LocationUpsertPayload: Encodable {
+        let program_id: String
+        let name: String
+        let latitude: Double
+        let longitude: Double
+    }
+
+    func upsertLocation(programId: String, name: String, latitude: Double, longitude: Double) async throws {
+        let payload = LocationUpsertPayload(program_id: programId, name: name, latitude: latitude, longitude: longitude)
+        try await client.from("locations")
+            .upsert(payload, onConflict: "program_id,name")
+            .execute()
+    }
+
+    func deleteLocation(id: String) async throws {
+        try await client.from("locations").delete().eq("id", value: id).execute()
+    }
+
     // MARK: - Spec masters
 
     func fetchSpecMasters() async throws -> [SpecMaster] {

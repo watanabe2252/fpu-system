@@ -13,7 +13,7 @@ struct ProgramWorkspaceView: View {
     @State private var editedTitle = ""
 
     enum Tab: Hashable {
-        case dashboard, input, maintenance
+        case dashboard, map, input, maintenance
     }
 
     init(program: Program, onBack: @escaping () -> Void) {
@@ -72,6 +72,10 @@ struct ProgramWorkspaceView: View {
                         .tabItem { Label("ダッシュボード", systemImage: "chart.bar.fill") }
                         .tag(Tab.dashboard)
 
+                    LinkMapView(vm: vm)
+                        .tabItem { Label("地図", systemImage: "map.fill") }
+                        .tag(Tab.map)
+
                     InputView(vm: vm)
                         .tabItem { Label("データ入力", systemImage: "square.and.pencil") }
                         .tag(Tab.input)
@@ -94,6 +98,8 @@ struct ProgramWorkspaceView: View {
         switch selectedTab {
         case .dashboard:
             MacDashboardView(vm: vm)
+        case .map:
+            LinkMapView(vm: vm)
         case .input:
             MacInputView(vm: vm)
         case .maintenance:
@@ -158,6 +164,8 @@ struct ProgramWorkspaceView: View {
             List(selection: selectedTabBinding) {
                 Label("ダッシュボード", systemImage: "chart.bar.fill")
                     .tag(Tab.dashboard)
+                Label("地図", systemImage: "map.fill")
+                    .tag(Tab.map)
                 Label("データ入力", systemImage: "square.and.pencil")
                     .tag(Tab.input)
                 if supabase.currentUserRole == .admin {

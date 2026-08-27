@@ -25,16 +25,20 @@
 		52E659D8279EE1DD9A9020CF /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8920ACEDEC2337AC0C51D991 /* Models.swift */; };
 		5FD4C1CA895A73B0BFF23F52 /* ProgramWorkspaceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E3F080E27F05D2E9B06E3C59 /* ProgramWorkspaceView.swift */; };
 		62B67FC8C2F51A3C85443BCD /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC0EC5E1CEECF428B35E333 /* RootView.swift */; };
+		6D5E8CD159F2745D6E7E8FCA /* MapPointsEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0906699FAB8CC8332BBCBE2 /* MapPointsEditorView.swift */; };
 		7E11C064E8A7BB459132D5C8 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD56D85C10C937D3DFC164D4 /* LoginView.swift */; };
 		8112B293CF72A742D071348B /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89E7A00C6D0AFF50FC8F152 /* Theme.swift */; };
 		8A3A6FC95265CB597E8E9151 /* FPUFieldSystemApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7219C3F390FEE0A3304C0496 /* FPUFieldSystemApp.swift */; };
 		8F10CA59FD14738B2306209F /* WorkspaceViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = DDB304DD61BACB80AB511D4F /* WorkspaceViewModel.swift */; };
+		92227E66685E25E889644FCD /* MapPointsEditorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = E0906699FAB8CC8332BBCBE2 /* MapPointsEditorView.swift */; };
 		957D5304A2D58BE025A512EA /* UserAdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9748D42D21B13EEE71A542AB /* UserAdminView.swift */; };
 		9D690BA7BA0DD95BDF5DE041 /* ProgramSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69FA7CDCAC442E2903FD73B7 /* ProgramSelectView.swift */; };
 		AB4A0235933C867444124AE0 /* UserAdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9748D42D21B13EEE71A542AB /* UserAdminView.swift */; };
 		AD587F0C092D56B48966ADA5 /* MaintenanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC724DA1FA6647726B9D644 /* MaintenanceView.swift */; };
+		BD392E7555D1DD2B325E448D /* LinkMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB4352DC866F7962C9EAC9E /* LinkMapView.swift */; };
 		C6E79071CB5CEC8E4DC938C6 /* MacDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9087C07CFF20CAEE580775 /* MacDashboardView.swift */; };
 		C8563F5AE9B5CE3DA3801DF5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C8338E9BC867DC1271072E6A /* Assets.xcassets */; };
+		CCD0B5F64C66C5925E99E20F /* LinkMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB4352DC866F7962C9EAC9E /* LinkMapView.swift */; };
 		CE189232DF59BEB348066AA9 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2378BCB67E7A5A772E2F568 /* SupabaseService.swift */; };
 		DA5C7625C3038C38F6551892 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E702F8E2E8B4FC79E4A9360 /* DashboardView.swift */; };
 		DAD877062695FDFCBCFCCC88 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C8338E9BC867DC1271072E6A /* Assets.xcassets */; };
@@ -60,11 +64,13 @@
 		C89E7A00C6D0AFF50FC8F152 /* Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Theme.swift; sourceTree = "<group>"; };
 		DBE6BF61060A9A5C3C24440E /* MacMaintenanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacMaintenanceView.swift; sourceTree = "<group>"; };
 		DDB304DD61BACB80AB511D4F /* WorkspaceViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WorkspaceViewModel.swift; sourceTree = "<group>"; };
+		E0906699FAB8CC8332BBCBE2 /* MapPointsEditorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapPointsEditorView.swift; sourceTree = "<group>"; };
 		E2378BCB67E7A5A772E2F568 /* SupabaseService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SupabaseService.swift; sourceTree = "<group>"; };
 		E3F080E27F05D2E9B06E3C59 /* ProgramWorkspaceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProgramWorkspaceView.swift; sourceTree = "<group>"; };
 		ED9087C07CFF20CAEE580775 /* MacDashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MacDashboardView.swift; sourceTree = "<group>"; };
 		FD56D85C10C937D3DFC164D4 /* LoginView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LoginView.swift; sourceTree = "<group>"; };
 		FDC0EC5E1CEECF428B35E333 /* RootView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RootView.swift; sourceTree = "<group>"; };
+		FEB4352DC866F7962C9EAC9E /* LinkMapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LinkMapView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -100,11 +106,13 @@
 			children = (
 				4E702F8E2E8B4FC79E4A9360 /* DashboardView.swift */,
 				58FFAAED75B9228A17922088 /* InputView.swift */,
+				FEB4352DC866F7962C9EAC9E /* LinkMapView.swift */,
 				FD56D85C10C937D3DFC164D4 /* LoginView.swift */,
 				ED9087C07CFF20CAEE580775 /* MacDashboardView.swift */,
 				84D730B8B68C19ACCC3EA16D /* MacInputView.swift */,
 				DBE6BF61060A9A5C3C24440E /* MacMaintenanceView.swift */,
 				2CC724DA1FA6647726B9D644 /* MaintenanceView.swift */,
+				E0906699FAB8CC8332BBCBE2 /* MapPointsEditorView.swift */,
 				69FA7CDCAC442E2903FD73B7 /* ProgramSelectView.swift */,
 				E3F080E27F05D2E9B06E3C59 /* ProgramWorkspaceView.swift */,
 				FDC0EC5E1CEECF428B35E333 /* RootView.swift */,
@@ -264,11 +272,13 @@
 				FC0F461340676E95B3DE19AA /* DashboardView.swift in Sources */,
 				8A3A6FC95265CB597E8E9151 /* FPUFieldSystemApp.swift in Sources */,
 				FF907524AF1AA8495D09CB21 /* InputView.swift in Sources */,
+				CCD0B5F64C66C5925E99E20F /* LinkMapView.swift in Sources */,
 				7E11C064E8A7BB459132D5C8 /* LoginView.swift in Sources */,
 				C6E79071CB5CEC8E4DC938C6 /* MacDashboardView.swift in Sources */,
 				37AC3AD35B7AE53B5F4C0B3D /* MacInputView.swift in Sources */,
 				40B62EEF603FEF3C775907E6 /* MacMaintenanceView.swift in Sources */,
 				08AFA4A0CA0A3DDD96B1914D /* MaintenanceView.swift in Sources */,
+				6D5E8CD159F2745D6E7E8FCA /* MapPointsEditorView.swift in Sources */,
 				3CF1670F568F66025A26EFAD /* Models.swift in Sources */,
 				3969825E133108583905C021 /* ProgramSelectView.swift in Sources */,
 				0A6C8551F98A453C79A179CF /* ProgramWorkspaceView.swift in Sources */,
@@ -287,11 +297,13 @@
 				DA5C7625C3038C38F6551892 /* DashboardView.swift in Sources */,
 				3AF5073A1DEBFCE740852588 /* FPUFieldSystemApp.swift in Sources */,
 				4F969646EF71E912E35415B9 /* InputView.swift in Sources */,
+				BD392E7555D1DD2B325E448D /* LinkMapView.swift in Sources */,
 				2BC078D929644F3D824351F3 /* LoginView.swift in Sources */,
 				F38AE26CD196B04135074648 /* MacDashboardView.swift in Sources */,
 				3F3513CF2E9778453F3AD3A3 /* MacInputView.swift in Sources */,
 				3F4B4C60EE1835608E7508BF /* MacMaintenanceView.swift in Sources */,
 				AD587F0C092D56B48966ADA5 /* MaintenanceView.swift in Sources */,
+				92227E66685E25E889644FCD /* MapPointsEditorView.swift in Sources */,
 				52E659D8279EE1DD9A9020CF /* Models.swift in Sources */,
 				9D690BA7BA0DD95BDF5DE041 /* ProgramSelectView.swift in Sources */,
 				5FD4C1CA895A73B0BFF23F52 /* ProgramWorkspaceView.swift in Sources */,

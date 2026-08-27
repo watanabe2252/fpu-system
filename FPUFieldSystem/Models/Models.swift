@@ -94,6 +94,22 @@ enum SpecMasterCategory: String, Codable {
     case tsRate = "ts_rate"
 }
 
+struct MapLocation: Codable, Identifiable, Hashable {
+    let id: String
+    let programId: String
+    var name: String
+    var latitude: Double
+    var longitude: Double
+
+    enum CodingKeys: String, CodingKey {
+        case id
+        case programId = "program_id"
+        case name
+        case latitude
+        case longitude
+    }
+}
+
 struct SpecMaster: Codable, Identifiable, Hashable {
     let id: Int
     var category: SpecMasterCategory

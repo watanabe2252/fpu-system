@@ -1,5 +1,6 @@
 import SwiftUI
 import Supabase
+import CoreLocation
 
 @MainActor
 final class WorkspaceViewModel: ObservableObject {
@@ -10,6 +11,7 @@ final class WorkspaceViewModel: ObservableObject {
     @Published var links: [Link] = []
     @Published var records: [Record] = []
     @Published var specMasters: [SpecMaster] = []
+    @Published var locations: [MapLocation] = []
     @Published var realtimeConnected = false
     @Published var isLoading = true
     @Published var errorMessage: String?
@@ -70,13 +72,84 @@ final class WorkspaceViewModel: ObservableObject {
             async let l = supabase.fetchLinks(programId: program.id)
             async let r = supabase.fetchRecords(programId: program.id)
             async let s = supabase.fetchSpecMasters()
+            async let loc = supabase.fetchLocations(programId: program.id)
             links = try await l
             records = try await r
             specMasters = try await s
+            locations = try await loc
         } catch {
             errorMessage = error.localizedDescription
         }
         isLoading = false
+    }
+
+    func reloadLocations() async {
+        do { locations = try await supabase.fetchLocations(programId: program.id) } catch { errorMessage = error.localizedDescription }
+    }
+
+    // MARK: - Map
+
+    /// Splits a link name like "グランコート→本社仮設1" into its two endpoint labels.
+    func endpoints(for linkName: String) -> (from: String, to: String)? {
+        let separators = ["→", "->", "➔"]
+        for sep in separators {
+            let parts = linkName.components(separatedBy: sep)
+            if parts.count == 2 {
+                let from = parts[0].trimmingCharacters(in: .whitespacesAndNewlines)
+                let to = parts[1].trimmingCharacters(in: .whitespacesAndNewlines)
+                if !from.isEmpty && !to.isEmpty { return (from, to) }
+            }
+        }
+        return nil
+    }
+
+    /// All unique point names referenced by the current links, in first-seen order.
+    var pointNames: [String] {
+        var seen = Set<String>()
+        var ordered: [String] = []
+        for link in links {
+            guard let (from, to) = endpoints(for: link.name) else { continue }
+            for name in [from, to] where !seen.contains(name) {
+                seen.insert(name)
+                ordered.append(name)
+            }
+        }
+        return ordered
+    }
+
+    func location(named name: String) -> MapLocation? {
+        locations.first { $0.name == name }
+    }
+
+    func saveLocation(name: String, coordinate: CLLocationCoordinate2D) async throws {
+        try await supabase.upsertLocation(programId: program.id, name: name, latitude: coordinate.latitude, longitude: coordinate.longitude)
+        await reloadLocations()
+    }
+
+    func deleteLocation(_ location: MapLocation) async throws {
+        try await supabase.deleteLocation(id: location.id)
+        await reloadLocations()
+    }
+
+    struct MapLinkLine: Identifiable {
+        let id: String
+        let category: LinkCategory
+        let from: CLLocationCoordinate2D
+        let to: CLLocationCoordinate2D
+    }
+
+    /// Links whose both endpoints currently have known coordinates, ready to draw as lines.
+    var mapLinkLines: [MapLinkLine] {
+        links.compactMap { link in
+            guard let (fromName, toName) = endpoints(for: link.name) else { return nil }
+            guard let from = location(named: fromName), let to = location(named: toName) else { return nil }
+            return MapLinkLine(
+                id: link.id,
+                category: link.category,
+                from: CLLocationCoordinate2D(latitude: from.latitude, longitude: from.longitude),
+                to: CLLocationCoordinate2D(latitude: to.latitude, longitude: to.longitude)
+            )
+        }
     }
 
     func reloadLinks() async {
