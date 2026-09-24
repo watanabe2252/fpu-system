@@ -29,6 +29,7 @@ targets:
         GENERATE_INFOPLIST_FILE: "YES"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
         INFOPLIST_KEY_CFBundleIconName: AppIcon
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: "NO"
         CODE_SIGN_STYLE: Automatic
         DEVELOPMENT_TEAM: U4U4QK464J
   FPUFieldSystemMac:
@@ -47,6 +48,7 @@ targets:
         SWIFT_VERSION: "5.0"
         GENERATE_INFOPLIST_FILE: "YES"
         INFOPLIST_KEY_NSHumanReadableCopyright: ""
+        INFOPLIST_KEY_ITSAppUsesNonExemptEncryption: "NO"
         ENABLE_HARDENED_RUNTIME: "YES"
         COMBINE_HIDPI_IMAGES: "YES"
         ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
