@@ -185,7 +185,11 @@ struct MapPointsEditorView: View {
         isSaving = true
         statusMessage = nil
         do {
-            try await vm.saveLocation(name: name, coordinate: coordinate)
+            if let existing = vm.location(named: name) {
+                try await vm.updateLocationCoordinate(existing, coordinate: coordinate)
+            } else {
+                try await vm.saveLocation(name: name, coordinate: coordinate)
+            }
             latText = String(coordinate.latitude)
             lonText = String(coordinate.longitude)
             statusMessage = "✔ 「\(name)」の位置を更新しました"

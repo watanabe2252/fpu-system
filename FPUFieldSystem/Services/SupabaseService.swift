@@ -260,17 +260,67 @@ final class SupabaseService: ObservableObject {
             .value
     }
 
+    /// `elevation`/`height_above_ground`/`antenna_gain` are encoded manually so that `nil`
+    /// is always sent as an explicit JSON `null` rather than Swift's synthesized
+    /// `encodeIfPresent` silently omitting the key (see RecordUpsertPayload for the same fix).
     struct LocationUpsertPayload: Encodable {
         let program_id: String
         let name: String
         let latitude: Double
         let longitude: Double
+        let elevation: Double?
+        let height_above_ground: Double?
+        let antenna_gain: Double?
+
+        enum CodingKeys: String, CodingKey {
+            case program_id, name, latitude, longitude, elevation, height_above_ground, antenna_gain
+        }
+
+        func encode(to encoder: Encoder) throws {
+            var container = encoder.container(keyedBy: CodingKeys.self)
+            try container.encode(program_id, forKey: .program_id)
+            try container.encode(name, forKey: .name)
+            try container.encode(latitude, forKey: .latitude)
+            try container.encode(longitude, forKey: .longitude)
+            if let elevation { try container.encode(elevation, forKey: .elevation) } else { try container.encodeNil(forKey: .elevation) }
+            if let height_above_ground { try container.encode(height_above_ground, forKey: .height_above_ground) } else { try container.encodeNil(forKey: .height_above_ground) }
+            if let antenna_gain { try container.encode(antenna_gain, forKey: .antenna_gain) } else { try container.encodeNil(forKey: .antenna_gain) }
+        }
     }
 
-    func upsertLocation(programId: String, name: String, latitude: Double, longitude: Double) async throws {
-        let payload = LocationUpsertPayload(program_id: programId, name: name, latitude: latitude, longitude: longitude)
+    func upsertLocation(
+        programId: String,
+        name: String,
+        latitude: Double,
+        longitude: Double,
+        elevation: Double? = nil,
+        heightAboveGround: Double? = nil,
+        antennaGain: Double? = nil
+    ) async throws {
+        let payload = LocationUpsertPayload(
+            program_id: programId,
+            name: name,
+            latitude: latitude,
+            longitude: longitude,
+            elevation: elevation,
+            height_above_ground: heightAboveGround,
+            antenna_gain: antennaGain
+        )
         try await client.from("locations")
             .upsert(payload, onConflict: "program_id,name")
+            .execute()
+    }
+
+    struct LocationCoordinatePayload: Encodable {
+        let latitude: Double
+        let longitude: Double
+    }
+
+    /// Updates only the coordinate of an existing location, leaving elevation/height/gain untouched.
+    func updateLocationCoordinate(id: String, latitude: Double, longitude: Double) async throws {
+        try await client.from("locations")
+            .update(LocationCoordinatePayload(latitude: latitude, longitude: longitude))
+            .eq("id", value: id)
             .execute()
     }
 

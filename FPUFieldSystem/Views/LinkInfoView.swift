@@ -168,20 +168,35 @@ struct LinkInfoView: View {
     }
 
     private func coordinateLine(label: String, point: MapLocation?) -> some View {
-        HStack(spacing: 4) {
-            Text(label)
-                .font(.system(size: 11, weight: .bold))
-                .foregroundStyle(.white)
-            if let point {
-                Text(String(format: "(%.4f, %.4f)", point.latitude, point.longitude))
-                    .font(.system(size: 10, weight: .medium, design: .monospaced))
-                    .foregroundStyle(.secondary)
-            } else {
-                Text("未設定")
-                    .font(.system(size: 10, weight: .medium))
-                    .foregroundStyle(.gray.opacity(0.6))
+        VStack(alignment: .leading, spacing: 1) {
+            HStack(spacing: 4) {
+                Text(label)
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundStyle(.white)
+                if let point {
+                    Text(String(format: "(%.4f, %.4f)", point.latitude, point.longitude))
+                        .font(.system(size: 10, weight: .medium, design: .monospaced))
+                        .foregroundStyle(.secondary)
+                } else {
+                    Text("未設定")
+                        .font(.system(size: 10, weight: .medium))
+                        .foregroundStyle(.gray.opacity(0.6))
+                }
+            }
+            if let point, let antennaMeta = antennaMetaText(point) {
+                Text(antennaMeta)
+                    .font(.system(size: 9, weight: .medium, design: .monospaced))
+                    .foregroundStyle(.gray)
             }
         }
+    }
+
+    private func antennaMetaText(_ point: MapLocation) -> String? {
+        var parts: [String] = []
+        if let elevation = point.elevation { parts.append("標高\(elevation)m") }
+        if let height = point.heightAboveGround { parts.append("地上高\(height)m") }
+        if let gain = point.antennaGain { parts.append("利得\(gain)dBi") }
+        return parts.isEmpty ? nil : parts.joined(separator: " / ")
     }
 
     private func specRow(label: String, value: String?) -> some View {

@@ -100,6 +100,9 @@ struct MapLocation: Codable, Identifiable, Hashable {
     var name: String
     var latitude: Double
     var longitude: Double
+    var elevation: Double?
+    var heightAboveGround: Double?
+    var antennaGain: Double?
 
     enum CodingKeys: String, CodingKey {
         case id
@@ -107,6 +110,9 @@ struct MapLocation: Codable, Identifiable, Hashable {
         case name
         case latitude
         case longitude
+        case elevation
+        case heightAboveGround = "height_above_ground"
+        case antennaGain = "antenna_gain"
     }
 }
 

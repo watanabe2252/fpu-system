@@ -133,8 +133,29 @@ final class WorkspaceViewModel: ObservableObject {
         locations.first { $0.name == name }
     }
 
-    func saveLocation(name: String, coordinate: CLLocationCoordinate2D) async throws {
-        try await supabase.upsertLocation(programId: program.id, name: name, latitude: coordinate.latitude, longitude: coordinate.longitude)
+    func saveLocation(
+        name: String,
+        coordinate: CLLocationCoordinate2D,
+        elevation: Double? = nil,
+        heightAboveGround: Double? = nil,
+        antennaGain: Double? = nil
+    ) async throws {
+        try await supabase.upsertLocation(
+            programId: program.id,
+            name: name,
+            latitude: coordinate.latitude,
+            longitude: coordinate.longitude,
+            elevation: elevation,
+            heightAboveGround: heightAboveGround,
+            antennaGain: antennaGain
+        )
+        await reloadLocations()
+    }
+
+    /// Updates just a location's coordinate (e.g. dragging a pin on the map), preserving
+    /// any elevation/height/antenna-gain metadata already saved for it.
+    func updateLocationCoordinate(_ location: MapLocation, coordinate: CLLocationCoordinate2D) async throws {
+        try await supabase.updateLocationCoordinate(id: location.id, latitude: coordinate.latitude, longitude: coordinate.longitude)
         await reloadLocations()
     }
 
