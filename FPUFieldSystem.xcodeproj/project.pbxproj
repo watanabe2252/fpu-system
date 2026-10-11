@@ -16,11 +16,13 @@
 		2BC078D929644F3D824351F3 /* LoginView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FD56D85C10C937D3DFC164D4 /* LoginView.swift */; };
 		37AC3AD35B7AE53B5F4C0B3D /* MacInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D730B8B68C19ACCC3EA16D /* MacInputView.swift */; };
 		3969825E133108583905C021 /* ProgramSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69FA7CDCAC442E2903FD73B7 /* ProgramSelectView.swift */; };
+		3AA6563EF8F6B110988582AC /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 12C77CD8DB4A2F5A93F903AE /* PrivacyInfo.xcprivacy */; };
 		3AF5073A1DEBFCE740852588 /* FPUFieldSystemApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7219C3F390FEE0A3304C0496 /* FPUFieldSystemApp.swift */; };
 		3CF1670F568F66025A26EFAD /* Models.swift in Sources */ = {isa = PBXBuildFile; fileRef = 8920ACEDEC2337AC0C51D991 /* Models.swift */; };
 		3F3513CF2E9778453F3AD3A3 /* MacInputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 84D730B8B68C19ACCC3EA16D /* MacInputView.swift */; };
 		3F4B4C60EE1835608E7508BF /* MacMaintenanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE6BF61060A9A5C3C24440E /* MacMaintenanceView.swift */; };
 		40B62EEF603FEF3C775907E6 /* MacMaintenanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = DBE6BF61060A9A5C3C24440E /* MacMaintenanceView.swift */; };
+		4131B47D4FFA2C54B7D5B973 /* PrivacyInfo.xcprivacy in Resources */ = {isa = PBXBuildFile; fileRef = 12C77CD8DB4A2F5A93F903AE /* PrivacyInfo.xcprivacy */; };
 		42BFD778F5F0CDF1C8580FE7 /* Supabase in Frameworks */ = {isa = PBXBuildFile; productRef = 5AEA95605CBE5F280851F067 /* Supabase */; };
 		4A194EE6A25075E5C692D8E8 /* Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = C89E7A00C6D0AFF50FC8F152 /* Theme.swift */; };
 		4F969646EF71E912E35415B9 /* InputView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 58FFAAED75B9228A17922088 /* InputView.swift */; };
@@ -54,6 +56,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		12C77CD8DB4A2F5A93F903AE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		2CC724DA1FA6647726B9D644 /* MaintenanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaintenanceView.swift; sourceTree = "<group>"; };
 		394CF6C3310E73059724D78D /* FPUFieldSystem.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FPUFieldSystem.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		4E702F8E2E8B4FC79E4A9360 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
@@ -152,6 +155,7 @@
 			children = (
 				C8338E9BC867DC1271072E6A /* Assets.xcassets */,
 				7219C3F390FEE0A3304C0496 /* FPUFieldSystemApp.swift */,
+				12C77CD8DB4A2F5A93F903AE /* PrivacyInfo.xcprivacy */,
 				1BF10D9CCD475B5F96AB7F40 /* Models */,
 				C1AAF26E7150F1C3DACF2B7E /* Services */,
 				16A749FE77C4C5D763F40B24 /* Views */,
@@ -259,6 +263,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				C8563F5AE9B5CE3DA3801DF5 /* Assets.xcassets in Resources */,
+				4131B47D4FFA2C54B7D5B973 /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -267,6 +272,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				DAD877062695FDFCBCFCCC88 /* Assets.xcassets in Resources */,
+				3AA6563EF8F6B110988582AC /* PrivacyInfo.xcprivacy in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
