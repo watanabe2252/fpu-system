@@ -73,6 +73,10 @@ struct LoginView: View {
                     .background(Theme.rose.opacity(0.1))
                     .clipShape(RoundedRectangle(cornerRadius: 12))
             }
+
+            Text(AppVersion.text)
+                .font(.system(size: 10, weight: .medium, design: .monospaced))
+                .foregroundStyle(.gray.opacity(0.7))
         }
         .padding(24)
         .background(Theme.cardBg)

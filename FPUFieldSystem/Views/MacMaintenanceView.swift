@@ -26,6 +26,11 @@ struct MacMaintenanceView: View {
 
     var body: some View {
         Form {
+            Section("アプリのバージョン") {
+                Text(AppVersion.text)
+                    .font(.system(.body, design: .monospaced))
+            }
+
             Section("動的アラートしきい値集中管理") {
                 Text("FPU無線系統 (main / relay)")
                     .font(.headline)

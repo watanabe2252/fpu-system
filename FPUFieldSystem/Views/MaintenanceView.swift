@@ -26,6 +26,7 @@ struct MaintenanceView: View {
 
     var body: some View {
         List {
+            versionSection
             thresholdSection
             csvSection
             addLinkSection
@@ -62,6 +63,19 @@ struct MaintenanceView: View {
             }
         } message: {
             Text("この大会の全ての受信点・全フェーズの電界強度が「未入力」に戻ります。この操作は取り消せません。")
+        }
+    }
+
+    // MARK: - バージョン
+
+    private var versionSection: some View {
+        Section {
+            HStack {
+                Text("アプリのバージョン").font(.system(size: 11, weight: .bold)).foregroundStyle(.gray)
+                Spacer()
+                Text(AppVersion.text).font(.system(size: 11, weight: .black, design: .monospaced)).foregroundStyle(.white)
+            }
+            .listRowBackground(Theme.cardBg)
         }
     }
 

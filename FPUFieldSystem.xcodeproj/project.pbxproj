@@ -41,11 +41,13 @@
 		9D690BA7BA0DD95BDF5DE041 /* ProgramSelectView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 69FA7CDCAC442E2903FD73B7 /* ProgramSelectView.swift */; };
 		AB4A0235933C867444124AE0 /* UserAdminView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9748D42D21B13EEE71A542AB /* UserAdminView.swift */; };
 		AD587F0C092D56B48966ADA5 /* MaintenanceView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 2CC724DA1FA6647726B9D644 /* MaintenanceView.swift */; };
+		B3ED6EFEDF8BD3A3BD7D390C /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D53FF8A608064C486BA541E /* AppVersion.swift */; };
 		BD392E7555D1DD2B325E448D /* LinkMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB4352DC866F7962C9EAC9E /* LinkMapView.swift */; };
 		C6E79071CB5CEC8E4DC938C6 /* MacDashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED9087C07CFF20CAEE580775 /* MacDashboardView.swift */; };
 		C8563F5AE9B5CE3DA3801DF5 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C8338E9BC867DC1271072E6A /* Assets.xcassets */; };
 		CCD0B5F64C66C5925E99E20F /* LinkMapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FEB4352DC866F7962C9EAC9E /* LinkMapView.swift */; };
 		CE189232DF59BEB348066AA9 /* SupabaseService.swift in Sources */ = {isa = PBXBuildFile; fileRef = E2378BCB67E7A5A772E2F568 /* SupabaseService.swift */; };
+		D421DC9F3F0648F2BB608D95 /* AppVersion.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0D53FF8A608064C486BA541E /* AppVersion.swift */; };
 		DA5C7625C3038C38F6551892 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 4E702F8E2E8B4FC79E4A9360 /* DashboardView.swift */; };
 		DAD877062695FDFCBCFCCC88 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = C8338E9BC867DC1271072E6A /* Assets.xcassets */; };
 		E0A70C95A0AA11189982E1F1 /* RootView.swift in Sources */ = {isa = PBXBuildFile; fileRef = FDC0EC5E1CEECF428B35E333 /* RootView.swift */; };
@@ -56,6 +58,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		0D53FF8A608064C486BA541E /* AppVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppVersion.swift; sourceTree = "<group>"; };
 		12C77CD8DB4A2F5A93F903AE /* PrivacyInfo.xcprivacy */ = {isa = PBXFileReference; path = PrivacyInfo.xcprivacy; sourceTree = "<group>"; };
 		2CC724DA1FA6647726B9D644 /* MaintenanceView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MaintenanceView.swift; sourceTree = "<group>"; };
 		394CF6C3310E73059724D78D /* FPUFieldSystem.app */ = {isa = PBXFileReference; includeInIndex = 0; lastKnownFileType = wrapper.application; path = FPUFieldSystem.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -153,6 +156,7 @@
 		D148642F8B01D31D23EF12F8 /* FPUFieldSystem */ = {
 			isa = PBXGroup;
 			children = (
+				0D53FF8A608064C486BA541E /* AppVersion.swift */,
 				C8338E9BC867DC1271072E6A /* Assets.xcassets */,
 				7219C3F390FEE0A3304C0496 /* FPUFieldSystemApp.swift */,
 				12C77CD8DB4A2F5A93F903AE /* PrivacyInfo.xcprivacy */,
@@ -283,6 +287,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				B3ED6EFEDF8BD3A3BD7D390C /* AppVersion.swift in Sources */,
 				FC0F461340676E95B3DE19AA /* DashboardView.swift in Sources */,
 				8A3A6FC95265CB597E8E9151 /* FPUFieldSystemApp.swift in Sources */,
 				FF907524AF1AA8495D09CB21 /* InputView.swift in Sources */,
@@ -310,6 +315,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				D421DC9F3F0648F2BB608D95 /* AppVersion.swift in Sources */,
 				DA5C7625C3038C38F6551892 /* DashboardView.swift in Sources */,
 				3AF5073A1DEBFCE740852588 /* FPUFieldSystemApp.swift in Sources */,
 				4F969646EF71E912E35415B9 /* InputView.swift in Sources */,
@@ -342,7 +348,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2026101201;
 				DEVELOPMENT_TEAM = U4U4QK464J;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -366,7 +372,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2026101201;
 				DEVELOPMENT_TEAM = U4U4QK464J;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleIconName = AppIcon;
@@ -455,7 +461,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_IDENTITY = "iPhone Developer";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2026101201;
 				DEVELOPMENT_TEAM = U4U4QK464J;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_KEY_CFBundleIconName = AppIcon;
@@ -481,7 +487,7 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
-				CURRENT_PROJECT_VERSION = 1;
+				CURRENT_PROJECT_VERSION = 2026101201;
 				DEVELOPMENT_TEAM = U4U4QK464J;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
